@@ -4,13 +4,16 @@ import sys
 import autograd_4bit
 
 from pathlib import Path
+
 sys.path.insert(0, str(Path("repositories/alpaca_lora_4bit")))
 
 from amp_wrapper import AMPWrapper
 from autograd_4bit import Autograd4bitQuantLinear
 from autograd_4bit import load_llama_model_4bit_low_ram
 from monkeypatch.peft_tuners_lora_monkey_patch import Linear4bitLt
-from monkeypatch.peft_tuners_lora_monkey_patch import replace_peft_model_with_gptq_lora_model
+from monkeypatch.peft_tuners_lora_monkey_patch import (
+    replace_peft_model_with_gptq_lora_model,
+)
 
 from app import shared
 from app.loaders.gptq import find_quantized_model_file
@@ -19,9 +22,11 @@ replace_peft_model_with_gptq_lora_model()
 
 
 def load_model_llama(model_name):
-    config_path = str(Path(f'{shared.args.model_dir}/{model_name}'))
+    config_path = str(Path(f"{shared.args.model_dir}/{model_name}"))
     model_path = str(find_quantized_model_file(model_name))
-    model, tokenizer = load_llama_model_4bit_low_ram(config_path, model_path, groupsize=shared.args.groupsize, is_v1_model=False)
+    model, tokenizer = load_llama_model_4bit_low_ram(
+        config_path, model_path, groupsize=shared.args.groupsize, is_v1_model=False
+    )
     for n, m in model.named_modules():
         if isinstance(m, Autograd4bitQuantLinear) or isinstance(m, Linear4bitLt):
             if m.is_v1_model:

@@ -19,22 +19,28 @@ def get_model_settings_from_yamls(model):
 
 
 def infer_loader(model_name):
-    path_to_model = Path(f'{shared.args.model_dir}/{model_name}')
+    path_to_model = Path(f"{shared.args.model_dir}/{model_name}")
     model_settings = get_model_settings_from_yamls(model_name)
     if not path_to_model.exists():
         loader = None
-    elif Path(f'{shared.args.model_dir}/{model_name}/quantize_config.json').exists() or ('wbits' in model_settings and type(model_settings['wbits']) is int and model_settings['wbits'] > 0):
-        loader = 'AutoGPTQ'
-    elif len(list(path_to_model.glob('*ggml*.bin'))) > 0:
-        loader = 'llama.cpp'
-    elif re.match('.*ggml.*\.bin', model_name.lower()):
-        loader = 'llama.cpp'
-    elif re.match('.*rwkv.*\.pth', model_name.lower()):
-        loader = 'RWKV'
+    elif Path(
+        f"{shared.args.model_dir}/{model_name}/quantize_config.json"
+    ).exists() or (
+        "wbits" in model_settings
+        and type(model_settings["wbits"]) is int
+        and model_settings["wbits"] > 0
+    ):
+        loader = "AutoGPTQ"
+    elif len(list(path_to_model.glob("*ggml*.bin"))) > 0:
+        loader = "llama.cpp"
+    elif re.match(".*ggml.*\.bin", model_name.lower()):
+        loader = "llama.cpp"
+    elif re.match(".*rwkv.*\.pth", model_name.lower()):
+        loader = "RWKV"
     elif shared.args.flexgen:
-        loader = 'FlexGen'
+        loader = "FlexGen"
     else:
-        loader = 'Transformers'
+        loader = "Transformers"
 
     return loader
 
@@ -49,26 +55,29 @@ def update_model_parameters(state, initial=False):
             continue
 
         value = state[element]
-        if element.startswith('gpu_memory'):
+        if element.startswith("gpu_memory"):
             gpu_memories.append(value)
             continue
 
-        if initial and vars(shared.args)[element] != vars(shared.args_defaults)[element]:
+        if (
+            initial
+            and vars(shared.args)[element] != vars(shared.args_defaults)[element]
+        ):
             continue
 
         # Setting null defaults
-        if element in ['wbits', 'groupsize', 'model_type'] and value == 'None':
+        if element in ["wbits", "groupsize", "model_type"] and value == "None":
             value = vars(shared.args_defaults)[element]
-        elif element in ['cpu_memory'] and value == 0:
+        elif element in ["cpu_memory"] and value == 0:
             value = vars(shared.args_defaults)[element]
 
         # Making some simple conversions
-        if element in ['wbits', 'groupsize', 'pre_layer']:
+        if element in ["wbits", "groupsize", "pre_layer"]:
             value = int(value)
-        elif element == 'cpu_memory' and value is not None:
+        elif element == "cpu_memory" and value is not None:
             value = f"{value}MiB"
 
-        if element in ['pre_layer']:
+        if element in ["pre_layer"]:
             value = [value] if value > 0 else None
 
         setattr(shared.args, element, value)
@@ -79,7 +88,10 @@ def update_model_parameters(state, initial=False):
             found_positive = True
             break
 
-    if not (initial and vars(shared.args)['gpu_memory'] != vars(shared.args_defaults)['gpu_memory']):
+    if not (
+        initial
+        and vars(shared.args)["gpu_memory"] != vars(shared.args_defaults)["gpu_memory"]
+    ):
         if found_positive:
             shared.args.gpu_memory = [f"{i}MiB" for i in gpu_memories]
         else:
@@ -89,18 +101,25 @@ def update_model_parameters(state, initial=False):
 # UI: update the state variable with the model settings
 def apply_model_settings_to_state(model, state):
     model_settings = get_model_settings_from_yamls(model)
-    if 'loader' not in model_settings:
+    if "loader" not in model_settings:
         loader = infer_loader(model)
-        if 'wbits' in model_settings and type(model_settings['wbits']) is int and model_settings['wbits'] > 0:
-            loader = 'AutoGPTQ'
+        if (
+            "wbits" in model_settings
+            and type(model_settings["wbits"]) is int
+            and model_settings["wbits"] > 0
+        ):
+            loader = "AutoGPTQ"
 
         # If the user is using an alternative GPTQ loader, let them keep using it
-        if not (loader == 'AutoGPTQ' and state['loader'] in ['GPTQ-for-LLaMa', 'ExLlama', 'ExLlama_HF']):
-            state['loader'] = loader
+        if not (
+            loader == "AutoGPTQ"
+            and state["loader"] in ["GPTQ-for-LLaMa", "ExLlama", "ExLlama_HF"]
+        ):
+            state["loader"] = loader
 
     for k in model_settings:
         if k in state:
-            if k in ['wbits', 'groupsize']:
+            if k in ["wbits", "groupsize"]:
                 state[k] = str(model_settings[k])
             else:
                 state[k] = model_settings[k]
@@ -110,17 +129,17 @@ def apply_model_settings_to_state(model, state):
 
 # Save the settings for this model to models/config-user.yaml
 def save_model_settings(model, state):
-    if model == 'None':
+    if model == "None":
         yield ("Not saving the settings because no model is loaded.")
         return
 
-    with Path(f'{shared.args.model_dir}/config-user.yaml') as p:
+    with Path(f"{shared.args.model_dir}/config-user.yaml") as p:
         if p.exists():
-            user_config = yaml.safe_load(open(p, 'r').read())
+            user_config = yaml.safe_load(open(p, "r").read())
         else:
             user_config = {}
 
-        model_regex = model + '$'  # For exact matches
+        model_regex = model + "$"  # For exact matches
         for _dict in [user_config, shared.model_config]:
             if model_regex not in _dict:
                 _dict[model_regex] = {}
@@ -132,7 +151,7 @@ def save_model_settings(model, state):
             user_config[model_regex][k] = state[k]
             shared.model_config[model_regex][k] = state[k]
 
-        with open(p, 'w') as f:
+        with open(p, "w") as f:
             f.write(yaml.dump(user_config, sort_keys=False))
 
         yield (f"Settings for {model} saved to {p}")

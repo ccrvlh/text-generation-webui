@@ -10,7 +10,9 @@ try:
     from exllama.model import ExLlama, ExLlamaCache, ExLlamaConfig
     from exllama.tokenizer import ExLlamaTokenizer
 except:
-    logger.warning('Exllama module failed to load. Will attempt to load from repositories.')
+    logger.warning(
+        "Exllama module failed to load. Will attempt to load from repositories."
+    )
     try:
         from app.utils.imports import RelativeImport
 
@@ -19,7 +21,9 @@ except:
             from model import ExLlama, ExLlamaCache, ExLlamaConfig
             from tokenizer import ExLlamaTokenizer
     except:
-        logger.error("Could not find repositories/exllama/. Make sure that exllama is cloned inside repositories/ and is up to date.")
+        logger.error(
+            "Could not find repositories/exllama/. Make sure that exllama is cloned inside repositories/ and is up to date."
+        )
         raise
 
 
@@ -30,17 +34,19 @@ class ExllamaModel:
     @classmethod
     def from_pretrained(self, path_to_model):
 
-        path_to_model = Path(f'{shared.args.model_dir}') / Path(path_to_model)
+        path_to_model = Path(f"{shared.args.model_dir}") / Path(path_to_model)
         tokenizer_model_path = path_to_model / "tokenizer.model"
         model_config_path = path_to_model / "config.json"
 
         # Find the model checkpoint
         model_path = None
-        for ext in ['.safetensors', '.pt', '.bin']:
+        for ext in [".safetensors", ".pt", ".bin"]:
             found = list(path_to_model.glob(f"*{ext}"))
             if len(found) > 0:
                 if len(found) > 1:
-                    logger.warning(f'More than one {ext} model has been found. The last one will be selected. It could be wrong.')
+                    logger.warning(
+                        f"More than one {ext} model has been found. The last one will be selected. It could be wrong."
+                    )
 
                 model_path = found[-1]
                 break
@@ -77,13 +83,19 @@ class ExllamaModel:
         return result, result
 
     def generate_with_streaming(self, prompt, state):
-        self.generator.settings.temperature = state['temperature']
-        self.generator.settings.top_p = state['top_p']
-        self.generator.settings.top_k = state['top_k']
-        self.generator.settings.typical = state['typical_p']
-        self.generator.settings.token_repetition_penalty_max = state['repetition_penalty']
-        self.generator.settings.token_repetition_penalty_sustain = -1 if state['repetition_penalty_range'] <= 0 else state['repetition_penalty_range']
-        if state['ban_eos_token']:
+        self.generator.settings.temperature = state["temperature"]
+        self.generator.settings.top_p = state["top_p"]
+        self.generator.settings.top_k = state["top_k"]
+        self.generator.settings.typical = state["typical_p"]
+        self.generator.settings.token_repetition_penalty_max = state[
+            "repetition_penalty"
+        ]
+        self.generator.settings.token_repetition_penalty_sustain = (
+            -1
+            if state["repetition_penalty_range"] <= 0
+            else state["repetition_penalty_range"]
+        )
+        if state["ban_eos_token"]:
             self.generator.disallow_tokens([self.tokenizer.eos_token_id])
         else:
             self.generator.disallow_tokens(None)
@@ -92,26 +104,33 @@ class ExllamaModel:
 
         # Tokenizing the input
         ids = self.generator.tokenizer.encode(prompt)
-        ids = ids[:, -get_max_prompt_length(state):]
+        ids = ids[:, -get_max_prompt_length(state) :]
 
         self.generator.gen_begin_reuse(ids)
         initial_len = self.generator.sequence[0].shape[0]
         has_leading_space = False
-        for i in range(state['max_new_tokens']):
+        for i in range(state["max_new_tokens"]):
             token = self.generator.gen_single_token()
-            if i == 0 and self.generator.tokenizer.tokenizer.IdToPiece(int(token)).startswith('▁'):
+            if i == 0 and self.generator.tokenizer.tokenizer.IdToPiece(
+                int(token)
+            ).startswith("▁"):
                 has_leading_space = True
 
-            decoded_text = self.generator.tokenizer.decode(self.generator.sequence[0][initial_len:])
+            decoded_text = self.generator.tokenizer.decode(
+                self.generator.sequence[0][initial_len:]
+            )
             if has_leading_space:
-                decoded_text = ' ' + decoded_text
+                decoded_text = " " + decoded_text
 
             yield decoded_text
-            if token.item() == self.generator.tokenizer.eos_token_id or shared.stop_everything:
+            if (
+                token.item() == self.generator.tokenizer.eos_token_id
+                or shared.stop_everything
+            ):
                 break
 
     def generate(self, prompt, state):
-        output = ''
+        output = ""
         for output in self.generate_with_streaming(prompt, state):
             pass
 

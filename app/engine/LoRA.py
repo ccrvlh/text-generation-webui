@@ -9,9 +9,15 @@ from app.models import reload_model
 
 
 def add_lora_to_model(lora_names):
-    if 'GPTQForCausalLM' in shared.model.__class__.__name__ or shared.args.loader == 'AutoGPTQ':
+    if (
+        "GPTQForCausalLM" in shared.model.__class__.__name__
+        or shared.args.loader == "AutoGPTQ"
+    ):
         add_lora_autogptq(lora_names)
-    elif shared.model.__class__.__name__ in ['ExllamaModel', 'ExllamaHF'] or shared.args.loader == 'ExLlama':
+    elif (
+        shared.model.__class__.__name__ in ["ExllamaModel", "ExllamaHF"]
+        or shared.args.loader == "ExLlama"
+    ):
         add_lora_exllama(lora_names)
     else:
         add_lora_transformers(lora_names)
@@ -25,11 +31,13 @@ def add_lora_exllama(lora_names):
         try:
             from repositories.exllama.lora import ExLlamaLora
         except:
-            logger.error("Could not find the file repositories/exllama/lora.py. Make sure that exllama is cloned inside repositories/ and is up to date.")
+            logger.error(
+                "Could not find the file repositories/exllama/lora.py. Make sure that exllama is cloned inside repositories/ and is up to date."
+            )
             return
 
     if len(lora_names) == 0:
-        if shared.model.__class__.__name__ == 'ExllamaModel':
+        if shared.model.__class__.__name__ == "ExllamaModel":
             shared.model.generator.lora = None
         else:
             shared.model.lora = None
@@ -38,18 +46,28 @@ def add_lora_exllama(lora_names):
         return
     else:
         if len(lora_names) > 1:
-            logger.warning('ExLlama can only work with 1 LoRA at the moment. Only the first one in the list will be loaded.')
+            logger.warning(
+                "ExLlama can only work with 1 LoRA at the moment. Only the first one in the list will be loaded."
+            )
 
         lora_path = Path(f"{shared.args.lora_dir}/{lora_names[0]}")
         lora_config_path = lora_path / "adapter_config.json"
         lora_adapter_path = lora_path / "adapter_model.bin"
 
-        logger.info("Applying the following LoRAs to {}: {}".format(shared.model_name, ', '.join([lora_names[0]])))
-        if shared.model.__class__.__name__ == 'ExllamaModel':
-            lora = ExLlamaLora(shared.model.model, str(lora_config_path), str(lora_adapter_path))
+        logger.info(
+            "Applying the following LoRAs to {}: {}".format(
+                shared.model_name, ", ".join([lora_names[0]])
+            )
+        )
+        if shared.model.__class__.__name__ == "ExllamaModel":
+            lora = ExLlamaLora(
+                shared.model.model, str(lora_config_path), str(lora_adapter_path)
+            )
             shared.model.generator.lora = lora
         else:
-            lora = ExLlamaLora(shared.model.ex_model, str(lora_config_path), str(lora_adapter_path))
+            lora = ExLlamaLora(
+                shared.model.ex_model, str(lora_config_path), str(lora_adapter_path)
+            )
             shared.model.lora = lora
 
         shared.lora_names = [lora_names[0]]
@@ -62,7 +80,9 @@ def add_lora_autogptq(lora_names):
         from auto_gptq import get_gptq_peft_model
         from auto_gptq.utils.peft_utils import GPTQLoraConfig
     except:
-        logger.error("This version of AutoGPTQ does not support LoRA. You need to install from source or wait for a new release.")
+        logger.error(
+            "This version of AutoGPTQ does not support LoRA. You need to install from source or wait for a new release."
+        )
         return
 
     if len(lora_names) == 0:
@@ -72,16 +92,24 @@ def add_lora_autogptq(lora_names):
         return
     else:
         if len(lora_names) > 1:
-            logger.warning('AutoGPTQ can only work with 1 LoRA at the moment. Only the first one in the list will be loaded.')
+            logger.warning(
+                "AutoGPTQ can only work with 1 LoRA at the moment. Only the first one in the list will be loaded."
+            )
         if not shared.args.no_inject_fused_attention:
-            logger.warning('Fused Atttention + AutoGPTQ may break Lora loading. Disable it.')
+            logger.warning(
+                "Fused Atttention + AutoGPTQ may break Lora loading. Disable it."
+            )
 
         peft_config = GPTQLoraConfig(
             inference_mode=True,
         )
 
         lora_path = Path(f"{shared.args.lora_dir}/{lora_names[0]}")
-        logger.info("Applying the following LoRAs to {}: {}".format(shared.model_name, ', '.join([lora_names[0]])))
+        logger.info(
+            "Applying the following LoRAs to {}: {}".format(
+                shared.model_name, ", ".join([lora_names[0]])
+            )
+        )
         shared.model = get_gptq_peft_model(shared.model, peft_config, lora_path)
         shared.lora_names = [lora_names[0]]
         return
@@ -107,7 +135,7 @@ def add_lora_transformers(lora_names):
     # If any LoRA needs to be removed, start over
     if len(removed_set) > 0:
         # shared.model may no longer be PeftModel
-        if hasattr(shared.model, 'disable_adapter'):
+        if hasattr(shared.model, "disable_adapter"):
             shared.model.disable_adapter()
             shared.model = shared.model.base_model.model
 
@@ -115,14 +143,26 @@ def add_lora_transformers(lora_names):
         params = {}
         if not shared.args.cpu:
             if shared.args.load_in_4bit or shared.args.load_in_8bit:
-                params['peft_type'] = shared.model.dtype
+                params["peft_type"] = shared.model.dtype
             else:
-                params['dtype'] = shared.model.dtype
+                params["dtype"] = shared.model.dtype
                 if hasattr(shared.model, "hf_device_map"):
-                    params['device_map'] = {"base_model.model." + k: v for k, v in shared.model.hf_device_map.items()}
+                    params["device_map"] = {
+                        "base_model.model." + k: v
+                        for k, v in shared.model.hf_device_map.items()
+                    }
 
-        logger.info("Applying the following LoRAs to {}: {}".format(shared.model_name, ', '.join(lora_names)))
-        shared.model = PeftModel.from_pretrained(shared.model, Path(f"{shared.args.lora_dir}/{lora_names[0]}"), adapter_name=lora_names[0], **params)
+        logger.info(
+            "Applying the following LoRAs to {}: {}".format(
+                shared.model_name, ", ".join(lora_names)
+            )
+        )
+        shared.model = PeftModel.from_pretrained(
+            shared.model,
+            Path(f"{shared.args.lora_dir}/{lora_names[0]}"),
+            adapter_name=lora_names[0],
+            **params,
+        )
         for lora in lora_names[1:]:
             shared.model.load_adapter(Path(f"{shared.args.lora_dir}/{lora}"), lora)
 
@@ -132,7 +172,7 @@ def add_lora_transformers(lora_names):
             shared.model.half()
             if not hasattr(shared.model, "hf_device_map"):
                 if torch.backends.mps.is_available():
-                    device = torch.device('mps')
+                    device = torch.device("mps")
                     shared.model = shared.model.to(device)
                 else:
                     shared.model = shared.model.cuda()

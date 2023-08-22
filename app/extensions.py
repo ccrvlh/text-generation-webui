@@ -15,7 +15,7 @@ setup_called = set()
 
 
 def apply_settings(extension, name):
-    if not hasattr(extension, 'params'):
+    if not hasattr(extension, "params"):
         return
 
     for param in extension.params:
@@ -30,7 +30,7 @@ def load_extensions():
     global state, setup_called
     for i, name in enumerate(shared.args.extensions):
         if name in available_extensions:
-            if name != 'api':
+            if name != "api":
                 logger.info(f'Loading the extension "{name}"...')
             try:
                 exec(f"import extensions.{name}.script")
@@ -69,12 +69,12 @@ def _apply_string_extensions(function_name, text, state):
 # Input hijack of extensions
 def _apply_input_hijack(text, visible_text):
     for extension, _ in iterator():
-        if hasattr(extension, 'input_hijack') and extension.input_hijack['state']:
-            extension.input_hijack['state'] = False
-            if callable(extension.input_hijack['value']):
-                text, visible_text = extension.input_hijack['value'](text, visible_text)
+        if hasattr(extension, "input_hijack") and extension.input_hijack["state"]:
+            extension.input_hijack["state"] = False
+            if callable(extension.input_hijack["value"]):
+                text, visible_text = extension.input_hijack["value"](text, visible_text)
             else:
-                text, visible_text = extension.input_hijack['value']
+                text, visible_text = extension.input_hijack["value"]
 
     return text, visible_text
 
@@ -82,7 +82,7 @@ def _apply_input_hijack(text, visible_text):
 # custom_generate_chat_prompt handling - currently only the first one will work
 def _apply_custom_generate_chat_prompt(text, state, **kwargs):
     for extension, _ in iterator():
-        if hasattr(extension, 'custom_generate_chat_prompt'):
+        if hasattr(extension, "custom_generate_chat_prompt"):
             return extension.custom_generate_chat_prompt(text, state, **kwargs)
 
     return None
@@ -110,7 +110,9 @@ def _apply_history_modifier_extensions(history):
 def _apply_tokenizer_extensions(function_name, state, prompt, input_ids, input_embeds):
     for extension, _ in iterator():
         if hasattr(extension, function_name):
-            prompt, input_ids, input_embeds = getattr(extension, function_name)(state, prompt, input_ids, input_embeds)
+            prompt, input_ids, input_embeds = getattr(extension, function_name)(
+                state, prompt, input_ids, input_embeds
+            )
 
     return prompt, input_ids, input_embeds
 
@@ -127,8 +129,8 @@ def _apply_logits_processor_extensions(function_name, processor_list, input_ids)
 # currently only the first one will work
 def _apply_custom_tokenized_length(prompt):
     for extension, _ in iterator():
-        if hasattr(extension, 'custom_tokenized_length'):
-            return getattr(extension, 'custom_tokenized_length')(prompt)
+        if hasattr(extension, "custom_tokenized_length"):
+            return getattr(extension, "custom_tokenized_length")(prompt)
 
     return None
 
@@ -136,26 +138,26 @@ def _apply_custom_tokenized_length(prompt):
 # Custom generate reply handling - currently only the first one will work
 def _apply_custom_generate_reply():
     for extension, _ in iterator():
-        if hasattr(extension, 'custom_generate_reply'):
-            return getattr(extension, 'custom_generate_reply')
+        if hasattr(extension, "custom_generate_reply"):
+            return getattr(extension, "custom_generate_reply")
 
     return None
 
 
 def _apply_custom_css():
-    all_css = ''
+    all_css = ""
     for extension, _ in iterator():
-        if hasattr(extension, 'custom_css'):
-            all_css += getattr(extension, 'custom_css')()
+        if hasattr(extension, "custom_css"):
+            all_css += getattr(extension, "custom_css")()
 
     return all_css
 
 
 def _apply_custom_js():
-    all_js = ''
+    all_js = ""
     for extension, _ in iterator():
-        if hasattr(extension, 'custom_js'):
-            all_js += getattr(extension, 'custom_js')()
+        if hasattr(extension, "custom_js"):
+            all_js += getattr(extension, "custom_js")()
 
     return all_js
 
@@ -163,7 +165,9 @@ def _apply_custom_js():
 def create_extensions_block():
     to_display = []
     for extension, name in iterator():
-        if hasattr(extension, "ui") and not (hasattr(extension, 'params') and extension.params.get('is_tab', False)):
+        if hasattr(extension, "ui") and not (
+            hasattr(extension, "params") and extension.params.get("is_tab", False)
+        ):
             to_display.append((extension, name))
 
     # Creating the extension ui elements
@@ -171,15 +175,19 @@ def create_extensions_block():
         with gr.Column(elem_id="extensions"):
             for row in to_display:
                 extension, name = row
-                display_name = getattr(extension, 'params', {}).get('display_name', name)
+                display_name = getattr(extension, "params", {}).get(
+                    "display_name", name
+                )
                 gr.Markdown(f"\n### {display_name}")
                 extension.ui()
 
 
 def create_extensions_tabs():
     for extension, name in iterator():
-        if hasattr(extension, "ui") and (hasattr(extension, 'params') and extension.params.get('is_tab', False)):
-            display_name = getattr(extension, 'params', {}).get('display_name', name)
+        if hasattr(extension, "ui") and (
+            hasattr(extension, "params") and extension.params.get("is_tab", False)
+        ):
+            display_name = getattr(extension, "params", {}).get("display_name", name)
             with gr.Tab(display_name, elem_classes="extension-tab"):
                 extension.ui()
 
@@ -191,13 +199,15 @@ EXTENSION_MAP = {
     "history": _apply_history_modifier_extensions,
     "bot_prefix": partial(_apply_string_extensions, "bot_prefix_modifier"),
     "tokenizer": partial(_apply_tokenizer_extensions, "tokenizer_modifier"),
-    'logits_processor': partial(_apply_logits_processor_extensions, 'logits_processor_modifier'),
+    "logits_processor": partial(
+        _apply_logits_processor_extensions, "logits_processor_modifier"
+    ),
     "input_hijack": _apply_input_hijack,
     "custom_generate_chat_prompt": _apply_custom_generate_chat_prompt,
     "custom_generate_reply": _apply_custom_generate_reply,
     "tokenized_length": _apply_custom_tokenized_length,
     "css": _apply_custom_css,
-    "js": _apply_custom_js
+    "js": _apply_custom_js,
 }
 
 

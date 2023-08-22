@@ -17,7 +17,9 @@ def clone_or_pull_repository(github_url):
         yield f"Updating {github_url}..."
         # Perform a 'git pull' to update the repository
         try:
-            pull_output = subprocess.check_output(["git", "-C", repo_path, "pull"], stderr=subprocess.STDOUT)
+            pull_output = subprocess.check_output(
+                ["git", "-C", repo_path, "pull"], stderr=subprocess.STDOUT
+            )
             yield "Done."
             return pull_output.decode()
         except subprocess.CalledProcessError as e:
@@ -26,7 +28,9 @@ def clone_or_pull_repository(github_url):
     # Clone the repository
     try:
         yield f"Cloning {github_url}..."
-        clone_output = subprocess.check_output(["git", "clone", github_url, repo_path], stderr=subprocess.STDOUT)
+        clone_output = subprocess.check_output(
+            ["git", "clone", github_url, repo_path], stderr=subprocess.STDOUT
+        )
         yield "Done."
         return clone_output.decode()
     except subprocess.CalledProcessError as e:

@@ -13,14 +13,18 @@ from app.utils.logging import logger
 try:
     from exllama.model import ExLlama, ExLlamaCache, ExLlamaConfig
 except:
-    logger.warning('Exllama module failed to load. Will attempt to load from repositories.')
+    logger.warning(
+        "Exllama module failed to load. Will attempt to load from repositories."
+    )
     try:
         from app.utils.imports import RelativeImport
 
         with RelativeImport("repositories/exllama"):
             from model import ExLlama, ExLlamaCache, ExLlamaConfig
     except:
-        logger.error("Could not find repositories/exllama/. Make sure that exllama is cloned inside repositories/ and is up to date.")
+        logger.error(
+            "Could not find repositories/exllama/. Make sure that exllama is cloned inside repositories/ and is up to date."
+        )
         raise
 
 
@@ -40,7 +44,7 @@ class ExllamaHF(PreTrainedModel):
         pass
 
     def prepare_inputs_for_generation(self, input_ids, **kwargs):
-        return {'input_ids': input_ids, **kwargs}
+        return {"input_ids": input_ids, **kwargs}
 
     @property
     def device(self) -> torch.device:
@@ -48,25 +52,37 @@ class ExllamaHF(PreTrainedModel):
 
     def __call__(self, *args, **kwargs):
         # TODO: Some decoding methods (such as Contrastive Search) may not work at this time
-        assert len(args) == 0, 'no *args should be passed to forward'
-        use_cache = kwargs.get('use_cache', True)
-        labels = kwargs.get('labels', None)
-        seq = kwargs['input_ids'][0].tolist()
-        cache = kwargs['past_key_values'] if 'past_key_values' in kwargs else None
+        assert len(args) == 0, "no *args should be passed to forward"
+        use_cache = kwargs.get("use_cache", True)
+        labels = kwargs.get("labels", None)
+        seq = kwargs["input_ids"][0].tolist()
+        cache = kwargs["past_key_values"] if "past_key_values" in kwargs else None
 
         if labels is None:
             if cache is None:
                 self.ex_cache.current_seq_len = 0
                 cache = self.ex_cache
-                self.ex_model.forward(torch.tensor([seq[:-1]], dtype=torch.long), cache, preprocess_only=True, lora=self.lora)
+                self.ex_model.forward(
+                    torch.tensor([seq[:-1]], dtype=torch.long),
+                    cache,
+                    preprocess_only=True,
+                    lora=self.lora,
+                )
 
-            logits = self.ex_model.forward(torch.tensor([seq[-1:]], dtype=torch.long), cache, lora=self.lora).to(kwargs['input_ids'].device)
+            logits = self.ex_model.forward(
+                torch.tensor([seq[-1:]], dtype=torch.long), cache, lora=self.lora
+            ).to(kwargs["input_ids"].device)
         else:
             if cache is None:
                 self.ex_cache.current_seq_len = 0
                 cache = self.ex_cache
 
-            logits = self.ex_model.forward(torch.tensor([seq], dtype=torch.long), cache, last_id_only=False, lora=self.lora)
+            logits = self.ex_model.forward(
+                torch.tensor([seq], dtype=torch.long),
+                cache,
+                last_id_only=False,
+                lora=self.lora,
+            )
 
         loss = None
         if labels is not None:
@@ -81,25 +97,38 @@ class ExllamaHF(PreTrainedModel):
             shift_labels = shift_labels.to(shift_logits.device)
             loss = loss_fct(shift_logits, shift_labels)
 
-        return CausalLMOutputWithPast(logits=logits, past_key_values=cache if use_cache else None, loss=loss)
+        return CausalLMOutputWithPast(
+            logits=logits, past_key_values=cache if use_cache else None, loss=loss
+        )
 
     @classmethod
-    def from_pretrained(cls, pretrained_model_name_or_path: Optional[Union[str, os.PathLike]], *model_args, **kwargs):
-        assert len(model_args) == 0 and len(kwargs) == 0, "extra args is currently not supported"
+    def from_pretrained(
+        cls,
+        pretrained_model_name_or_path: Optional[Union[str, os.PathLike]],
+        *model_args,
+        **kwargs,
+    ):
+        assert (
+            len(model_args) == 0 and len(kwargs) == 0
+        ), "extra args is currently not supported"
         if isinstance(pretrained_model_name_or_path, str):
             pretrained_model_name_or_path = Path(pretrained_model_name_or_path)
 
-        pretrained_model_name_or_path = Path(f'{shared.args.model_dir}') / Path(pretrained_model_name_or_path)
-        config = ExLlamaConfig(pretrained_model_name_or_path / 'config.json')
+        pretrained_model_name_or_path = Path(f"{shared.args.model_dir}") / Path(
+            pretrained_model_name_or_path
+        )
+        config = ExLlamaConfig(pretrained_model_name_or_path / "config.json")
 
         # from 'oobabooga/text-generation-webui/modules/exllama.py'
         weight_path = None
-        for ext in ['.safetensors', '.pt', '.bin']:
+        for ext in [".safetensors", ".pt", ".bin"]:
             found = list(pretrained_model_name_or_path.glob(f"*{ext}"))
             if len(found) > 0:
                 weight_path = found[-1]
                 break
-        assert weight_path is not None, f'could not find weight in "{pretrained_model_name_or_path}"'
+        assert (
+            weight_path is not None
+        ), f'could not find weight in "{pretrained_model_name_or_path}"'
 
         config.model_path = str(weight_path)
         config.max_seq_len = shared.args.max_seq_len
