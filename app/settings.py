@@ -1,13 +1,13 @@
 import re
+import yaml
+
 from pathlib import Path
 
-import yaml
+from app import shared
 from app.front import ui
 
-from app import shared
 
-
-def get_model_settings_from_yamls(model):
+def get_model_settings(model):
     settings = shared.model_config
     model_settings = {}
     for pat in settings:
@@ -16,33 +16,6 @@ def get_model_settings_from_yamls(model):
                 model_settings[k] = settings[pat][k]
 
     return model_settings
-
-
-def infer_loader(model_name):
-    path_to_model = Path(f"{shared.args.model_dir}/{model_name}")
-    model_settings = get_model_settings_from_yamls(model_name)
-    if not path_to_model.exists():
-        loader = None
-    elif Path(
-        f"{shared.args.model_dir}/{model_name}/quantize_config.json"
-    ).exists() or (
-        "wbits" in model_settings
-        and type(model_settings["wbits"]) is int
-        and model_settings["wbits"] > 0
-    ):
-        loader = "AutoGPTQ"
-    elif len(list(path_to_model.glob("*ggml*.bin"))) > 0:
-        loader = "llama.cpp"
-    elif re.match(".*ggml.*\.bin", model_name.lower()):
-        loader = "llama.cpp"
-    elif re.match(".*rwkv.*\.pth", model_name.lower()):
-        loader = "RWKV"
-    elif shared.args.flexgen:
-        loader = "FlexGen"
-    else:
-        loader = "Transformers"
-
-    return loader
 
 
 # UI: update the command-line arguments based on the interface values
@@ -100,9 +73,9 @@ def update_model_parameters(state, initial=False):
 
 # UI: update the state variable with the model settings
 def apply_model_settings_to_state(model, state):
-    model_settings = get_model_settings_from_yamls(model)
+    model_settings = get_model_settings(model)
     if "loader" not in model_settings:
-        loader = infer_loader(model)
+        loader = get_model_loader(model)
         if (
             "wbits" in model_settings
             and type(model_settings["wbits"]) is int

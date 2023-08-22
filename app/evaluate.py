@@ -9,7 +9,7 @@ from tqdm import tqdm
 from app import shared
 from app.models import load_model
 from app.models import unload_model
-from app.settings import get_model_settings_from_yamls
+from app.settings import get_model_settings
 from app.settings import update_model_parameters
 from app.engine.textgen import encode
 
@@ -81,7 +81,7 @@ def calculate_perplexity(models, input_dataset, stride, _max_length):
         if model != "current model":
             try:
                 yield cumulative_log + f"Loading {model}...\n\n"
-                model_settings = get_model_settings_from_yamls(model)
+                model_settings = get_model_settings(model)
                 shared.settings.update(
                     model_settings
                 )  # hijacking the interface defaults

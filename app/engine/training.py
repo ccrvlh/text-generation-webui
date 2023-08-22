@@ -1,11 +1,4 @@
 import os
-
-from app.front import ui
-from app.utils import utils
-
-os.environ["WANDB_MODE"] = "offline"
-# os.environ["WANDB_DISABLED"] = "true"
-
 import json
 import math
 import random
@@ -14,24 +7,28 @@ import sys
 import threading
 import time
 import traceback
-from datetime import datetime
-from pathlib import Path
-
 import gradio as gr
 import torch
 import transformers
 
-from datasets import Dataset, load_dataset
-from peft import (
-    LoraConfig,
-    get_peft_model,
-    prepare_model_for_int8_training,
-    set_peft_model_state_dict,
-)
 
+os.environ["WANDB_MODE"] = "offline"
+# os.environ["WANDB_DISABLED"] = "true"
+
+from datetime import datetime
+from pathlib import Path
+from datasets import Dataset
+from datasets import load_dataset
+from peft import LoraConfig
+from peft import get_peft_model
+from peft import prepare_model_for_int8_training
+from peft import set_peft_model_state_dict
+
+from app import shared
+from app.front import ui
+from app.utils import utils
 from app.models import load_model
 from app.models import unload_model
-from app import shared
 from app.evaluate import calculate_perplexity
 from app.evaluate import generate_markdown_table
 from app.evaluate import save_past_evaluations
@@ -215,9 +212,7 @@ def create_train_interface():
                 ui.create_refresh_button(
                     dataset,
                     lambda: None,
-                    lambda: {
-                        "choices": utils.get_datasets("training/datasets", "json")
-                    },
+                    lambda: {"choices": utils.get_datasets("training/datasets", "json")},
                     "refresh-button",
                 )
                 eval_dataset = gr.Dropdown(
@@ -229,9 +224,7 @@ def create_train_interface():
                 ui.create_refresh_button(
                     eval_dataset,
                     lambda: None,
-                    lambda: {
-                        "choices": utils.get_datasets("training/datasets", "json")
-                    },
+                    lambda: {"choices": utils.get_datasets("training/datasets", "json")},
                     "refresh-button",
                 )
                 format = gr.Dropdown(
@@ -369,9 +362,7 @@ def create_train_interface():
     with gr.Tab("Perplexity evaluation", elem_id="evaluate-tab"):
         with gr.Row():
             with gr.Column():
-                models = gr.Dropdown(
-                    utils.get_available_models(), label="Models", multiselect=True
-                )
+                models = gr.Dropdown(utils.get_available_models(), label="Models", multiselect=True)
                 evaluate_text_file = gr.Dropdown(
                     choices=["wikitext", "ptb", "ptb_new"]
                     + utils.get_datasets("training/datasets", "txt")[1:],
@@ -405,9 +396,7 @@ def create_train_interface():
             with gr.Column():
                 evaluation_log = gr.Markdown(value="")
 
-        evaluation_table = gr.Dataframe(
-            value=generate_markdown_table(), interactive=True
-        )
+        evaluation_table = gr.Dataframe(value=generate_markdown_table(), interactive=True)
         with gr.Row():
             save_comments = gr.Button("Save comments", elem_classes="small-button")
             refresh_table = gr.Button("Refresh the table", elem_classes="small-button")
@@ -448,9 +437,7 @@ def create_train_interface():
     copy_from.change(do_copy_params, [copy_from] + all_params, all_params)
     start_button.click(do_train, all_params, output)
     stop_button.click(do_interrupt, None, None, queue=False)
-    higher_rank_limit.change(
-        change_rank_limit, [higher_rank_limit], [lora_rank, lora_alpha]
-    )
+    higher_rank_limit.change(change_rank_limit, [higher_rank_limit], [lora_rank, lora_alpha])
 
     # Evaluation events. For some reason, the interrupt event
     # doesn't work with the .then() syntax, so I write them one
@@ -461,9 +448,7 @@ def create_train_interface():
         evaluation_log,
         show_progress=False,
     )
-    start_evaluation.click(
-        generate_markdown_table, None, evaluation_table, show_progress=False
-    )
+    start_evaluation.click(generate_markdown_table, None, evaluation_table, show_progress=False)
 
     tmp = gr.State("")
     start_current_evaluation.click(lambda: ["current model"], None, tmp)
@@ -478,9 +463,7 @@ def create_train_interface():
     )
 
     stop_evaluation.click(None, None, None, cancels=[ev, ev_cur], queue=False)
-    refresh_table.click(
-        generate_markdown_table, None, evaluation_table, show_progress=True
-    )
+    refresh_table.click(generate_markdown_table, None, evaluation_table, show_progress=True)
     save_comments.click(save_past_evaluations, evaluation_table, None).then(
         lambda: "Comments saved.", None, evaluation_log, show_progress=False
     )
@@ -492,9 +475,7 @@ def do_interrupt():
 
 
 def do_copy_params(lora_name: str, *args):
-    f_name = (
-        f"{shared.args.lora_dir}/{clean_path(None, lora_name)}/training_parameters.json"
-    )
+    f_name = f"{shared.args.lora_dir}/{clean_path(None, lora_name)}/training_parameters.json"
     if Path(f_name).is_file():
         with open(f_name, "r", encoding="utf-8") as format_file:
             params: dict[str, str] = json.load(format_file)
@@ -536,7 +517,6 @@ def backup_adapter(input_folder):
     try:
         adapter_file = Path(f"{input_folder}/adapter_model.bin")
         if adapter_file.is_file():
-
             logger.info("Backing up existing LoRA adapter...")
             creation_date = datetime.fromtimestamp(adapter_file.stat().st_ctime)
             creation_date_str = creation_date.strftime("Backup-%Y-%m-%d")
@@ -546,9 +526,7 @@ def backup_adapter(input_folder):
             subfolder_path.mkdir(parents=True, exist_ok=True)
 
             # Check if the file already exists in the subfolder
-            backup_adapter_file = Path(
-                f"{input_folder}/{creation_date_str}/adapter_model.bin"
-            )
+            backup_adapter_file = Path(f"{input_folder}/{creation_date_str}/adapter_model.bin")
             if backup_adapter_file.is_file():
                 print(" - Backup already exists. Skipping backup process.")
                 return
@@ -608,7 +586,6 @@ def do_train(
     min_chars: int,
     report_to: str,
 ):
-
     if shared.args.monkey_patch:
         from monkeypatch.peft_tuners_lora_monkey_patch import (
             replace_peft_model_with_gptq_lora_model,
@@ -657,17 +634,10 @@ def do_train(
         yield "LoRA training with GPTQ models requires loading with `--monkey-patch`"
         return
 
-    elif (
-        not (shared.args.load_in_8bit or shared.args.load_in_4bit)
-        and shared.args.wbits <= 0
-    ):
+    elif not (shared.args.load_in_8bit or shared.args.load_in_4bit) and shared.args.wbits <= 0:
         yield "It is highly recommended you use `--load-in-8bit` for LoRA training. *(Will continue anyway in 2 seconds, press `Interrupt` to stop.)*"
-        logger.warning(
-            "It is highly recommended you use `--load-in-8bit` for LoRA training."
-        )
-        time.sleep(
-            2
-        )  # Give it a moment for the message to show in UI before continuing
+        logger.warning("It is highly recommended you use `--load-in-8bit` for LoRA training.")
+        time.sleep(2)  # Give it a moment for the message to show in UI before continuing
 
     if (
         cutoff_len <= 0
@@ -698,7 +668,6 @@ def do_train(
         return result
 
     def tokenize(prompt, append_eos_token=False):
-
         if train_only_after == "" or train_only_after not in prompt:
             input_ids = encode(prompt, True)
 
@@ -709,9 +678,7 @@ def do_train(
             ):
                 input_ids.append(shared.tokenizer.eos_token_id)
 
-            input_ids = [shared.tokenizer.pad_token_id] * (
-                cutoff_len - len(input_ids)
-            ) + input_ids
+            input_ids = [shared.tokenizer.pad_token_id] * (cutoff_len - len(input_ids)) + input_ids
             labels = [1] * len(input_ids)
 
         else:
@@ -751,9 +718,7 @@ def do_train(
         if fullpath.is_dir():
             logger.info("Training path directory {}".format(raw_text_file))
             raw_text = ""
-            file_paths = sorted(
-                fullpath.glob("*.txt"), key=lambda path: natural_keys(path.name)
-            )
+            file_paths = sorted(fullpath.glob("*.txt"), key=lambda path: natural_keys(path.name))
             for file_path in file_paths:
                 if file_path.is_file():
                     with file_path.open("r", encoding="utf-8") as file:
@@ -772,7 +737,6 @@ def do_train(
         eos_added = 0
         out_tokens = []
         for text_part in raw_text.split(cut_string):
-
             if len(text_part.strip()) <= min_chars:
                 continue
 
@@ -795,9 +759,7 @@ def do_train(
         text_chunks = [shared.tokenizer.decode(x) for x in out_tokens]
         del out_tokens
         if newline_favor_len > 0:
-            text_chunks = [
-                cut_chunk_for_newline(x, newline_favor_len) for x in text_chunks
-            ]
+            text_chunks = [cut_chunk_for_newline(x, newline_favor_len) for x in text_chunks]
 
         train_data = Dataset.from_list([tokenize(x) for x in text_chunks])
         del text_chunks
@@ -826,9 +788,7 @@ def do_train(
         def generate_prompt(data_point: dict[str, str]):
             for options, data in format_data.items():
                 if set(options.split(",")) == set(
-                    x[0]
-                    for x in data_point.items()
-                    if (x[1] is not None and len(x[1].strip()) > 0)
+                    x[0] for x in data_point.items() if (x[1] is not None and len(x[1].strip()) > 0)
                 ):
                     for key, val in data_point.items():
                         if val is not None:
@@ -843,9 +803,7 @@ def do_train(
             return tokenize(prompt, add_eos_token)
 
         logger.info("Loading JSON datasets...")
-        data = load_dataset(
-            "json", data_files=clean_path("training/datasets", f"{dataset}.json")
-        )
+        data = load_dataset("json", data_files=clean_path("training/datasets", f"{dataset}.json"))
         train_data = data["train"].map(
             generate_and_tokenize_prompt,
             new_fingerprint="%030x" % random.randrange(16**30),
@@ -912,10 +870,7 @@ def do_train(
     try:
         logger.info("Creating LoRA model...")
         lora_model = get_peft_model(shared.model, config)
-        if (
-            not always_override
-            and Path(f"{lora_file_path}/adapter_model.bin").is_file()
-        ):
+        if not always_override and Path(f"{lora_file_path}/adapter_model.bin").is_file():
             logger.info("Loading existing LoRA data...")
             state_dict_peft = torch.load(f"{lora_file_path}/adapter_model.bin")
             set_peft_model_state_dict(lora_model, state_dict_peft)
@@ -958,9 +913,7 @@ def do_train(
                 and actual_save_steps > 0
                 and state.global_step % actual_save_steps == 0
             ):
-                lora_model.save_pretrained(
-                    f"{lora_file_path}/checkpoint-{tracked.current_steps}/"
-                )
+                lora_model.save_pretrained(f"{lora_file_path}/checkpoint-{tracked.current_steps}/")
                 # Save log
                 with open(
                     f"{lora_file_path}/checkpoint-{tracked.current_steps}/training_log.json",
@@ -1035,9 +988,7 @@ def do_train(
             ddp_find_unused_parameters=None,
             no_cuda=shared.args.cpu,
         ),
-        data_collator=transformers.DataCollatorForLanguageModeling(
-            shared.tokenizer, mlm=False
-        ),
+        data_collator=transformers.DataCollatorForLanguageModeling(shared.tokenizer, mlm=False),
         callbacks=list([Callbacks()]),
     )
 
@@ -1047,9 +998,7 @@ def do_train(
         lora_model = torch.compile(lora_model)
 
     # == Save parameters for reuse ==
-    with open(
-        f"{lora_file_path}/training_parameters.json", "w", encoding="utf-8"
-    ) as file:
+    with open(f"{lora_file_path}/training_parameters.json", "w", encoding="utf-8") as file:
         vars = locals()
         json.dump({x: vars[x] for x in PARAMETERS}, file, indent=2)
 
@@ -1064,10 +1013,7 @@ def do_train(
     lora_trainable_param, lora_all_param = calc_trainable_parameters(lora_model)
 
     projections_string = ", ".join(
-        [
-            projection.replace("_proj", "")
-            for projection in model_to_lora_modules[model_id]
-        ]
+        [projection.replace("_proj", "") for projection in model_to_lora_modules[model_id]]
     )
 
     print(f"Training '{model_id}' model using ({projections_string}) projections")
@@ -1079,12 +1025,8 @@ def do_train(
 
     train_log.update({"base_model_name": shared.model_name})
     train_log.update({"base_model_class": shared.model.__class__.__name__})
-    train_log.update(
-        {"base_loaded_in_4bit": getattr(lora_model, "is_loaded_in_4bit", False)}
-    )
-    train_log.update(
-        {"base_loaded_in_8bit": getattr(lora_model, "is_loaded_in_8bit", False)}
-    )
+    train_log.update({"base_loaded_in_4bit": getattr(lora_model, "is_loaded_in_4bit", False)})
+    train_log.update({"base_loaded_in_8bit": getattr(lora_model, "is_loaded_in_8bit", False)})
     train_log.update({"projections": projections_string})
 
     if stop_at_loss > 0:
@@ -1100,9 +1042,7 @@ def do_train(
         try:
             # Iterate over the first 10 elements in the dataset (or fewer if there are less than 10)
             for i in range(min(10, len(trainer.train_dataset))):
-                decoded_text = shared.tokenizer.decode(
-                    trainer.train_dataset[i]["input_ids"]
-                )
+                decoded_text = shared.tokenizer.decode(trainer.train_dataset[i]["input_ids"])
                 decoded_entries.append({"value": decoded_text})
 
             # Write the log file
@@ -1110,9 +1050,7 @@ def do_train(
             with open(Path("logs/train_dataset_sample.json"), "w") as json_file:
                 json.dump(decoded_entries, json_file, indent=4)
 
-            logger.info(
-                "Log file 'train_dataset_sample.json' created in the 'logs' directory."
-            )
+            logger.info("Log file 'train_dataset_sample.json' created in the 'logs' directory.")
         except Exception as e:
             logger.error(f"Failed to create log file due to error: {e}")
 

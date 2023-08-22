@@ -2,34 +2,36 @@ import gc
 import os
 import re
 import time
-from pathlib import Path
 import hashlib
-
 import torch
 import transformers
-from accelerate import infer_auto_device_map, init_empty_weights
-from transformers import (
-    AutoConfig,
-    AutoModel,
-    AutoModelForCausalLM,
-    AutoModelForSeq2SeqLM,
-    AutoTokenizer,
-    BitsAndBytesConfig,
-)
 
-import app.shared as shared
-from app.loaders import llama_attn_hijack, sampler_hijack
+from pathlib import Path
+
+from accelerate import infer_auto_device_map
+from accelerate import init_empty_weights
+from transformers import AutoConfig
+from transformers import AutoModel
+from transformers import AutoModelForCausalLM
+from transformers import AutoModelForSeq2SeqLM
+from transformers import AutoTokenizer
+from transformers import BitsAndBytesConfig
+
+from app import shared
+from app import settings
+from app.loaders import llama_attn_hijack
+from app.loaders import sampler_hijack
 from app.utils.logging import logger
-from app.settings import infer_loader
 
 transformers.logging.set_verbosity_error()
 
 local_rank = None
 if shared.args.deepspeed:
     import deepspeed
-    from transformers.deepspeed import HfDeepSpeedConfig, is_deepspeed_zero3_enabled
-
     from app.utils.deepspeed import generate_ds_config
+
+    from transformers.deepspeed import HfDeepSpeedConfig
+    from transformers.deepspeed import is_deepspeed_zero3_enabled
 
     # Distributed setup
     local_rank = (
@@ -48,6 +50,33 @@ if shared.args.deepspeed:
     )  # Keep this object alive for the Transformers integration
 
 sampler_hijack.hijack_samplers()
+
+
+def get_model_loader(model_name):
+    path_to_model = Path(f"{shared.args.model_dir}/{model_name}")
+    model_settings = settings.get_model_settings(model_name)
+    if not path_to_model.exists():
+        loader = None
+    elif Path(
+        f"{shared.args.model_dir}/{model_name}/quantize_config.json"
+    ).exists() or (
+        "wbits" in model_settings
+        and type(model_settings["wbits"]) is int
+        and model_settings["wbits"] > 0
+    ):
+        loader = "AutoGPTQ"
+    elif len(list(path_to_model.glob("*ggml*.bin"))) > 0:
+        loader = "llama.cpp"
+    elif re.match(".*ggml.*\.bin", model_name.lower()):
+        loader = "llama.cpp"
+    elif re.match(".*rwkv.*\.pth", model_name.lower()):
+        loader = "RWKV"
+    elif shared.args.flexgen:
+        loader = "FlexGen"
+    else:
+        loader = "Transformers"
+
+    return loader
 
 
 def load_model(model_name, loader=None):
@@ -75,7 +104,7 @@ def load_model(model_name, loader=None):
         if shared.args.loader is not None:
             loader = shared.args.loader
         else:
-            loader = infer_loader(model_name)
+            loader = get_model_loader(model_name)
             if loader is None:
                 logger.error("The path to the model does not exist. Exiting.")
                 return None, None
@@ -229,7 +258,6 @@ def huggingface_loader(model_name):
         else:
             params["device_map"] = "auto"
             if shared.args.load_in_4bit:
-
                 # See https://github.com/huggingface/transformers/pull/23479/files
                 # and https://huggingface.co/blog/4bit-transformers-bitsandbytes
                 quantization_config_params = {
@@ -331,7 +359,7 @@ def flexgen_loader(model_name):
 
 
 def RWKV_loader(model_name):
-    from app.RWKV import RWKVModel, RWKVTokenizer
+    from app.loaders.RWKV import RWKVModel, RWKVTokenizer
 
     model = RWKVModel.from_pretrained(
         Path(f"{shared.args.model_dir}/{model_name}"),
@@ -380,7 +408,6 @@ def llamacpp_HF_loader(model_name):
 
 
 def GPTQ_loader(model_name):
-
     # Monkey patch
     if shared.args.monkey_patch:
         logger.warning(

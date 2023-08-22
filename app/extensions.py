@@ -1,12 +1,12 @@
-import traceback
 from functools import partial
-
-import gradio as gr
-
-import extensions
-import app.shared as shared
-from app.utils.logging import logger
 from inspect import signature
+
+import traceback
+import gradio as gr
+import extensions
+
+from app import shared
+from app.utils.logging import logger
 
 
 state = {}
@@ -46,15 +46,15 @@ def load_extensions():
                 traceback.print_exc()
 
 
-# This iterator returns the extensions in the order specified in the command-line
 def iterator():
+    # This iterator returns the extensions in the order specified in the command-line
     for name in sorted(state, key=lambda x: state[x][1]):
         if state[name][0]:
             yield getattr(extensions, name).script, name
 
 
-# Extension functions that map string -> string
 def _apply_string_extensions(function_name, text, state):
+    # Extension functions that map string -> string
     for extension, _ in iterator():
         if hasattr(extension, function_name):
             func = getattr(extension, function_name)
@@ -66,8 +66,8 @@ def _apply_string_extensions(function_name, text, state):
     return text
 
 
-# Input hijack of extensions
 def _apply_input_hijack(text, visible_text):
+    # Input hijack of extensions
     for extension, _ in iterator():
         if hasattr(extension, "input_hijack") and extension.input_hijack["state"]:
             extension.input_hijack["state"] = False
@@ -79,8 +79,8 @@ def _apply_input_hijack(text, visible_text):
     return text, visible_text
 
 
-# custom_generate_chat_prompt handling - currently only the first one will work
 def _apply_custom_generate_chat_prompt(text, state, **kwargs):
+    # custom_generate_chat_prompt handling - currently only the first one will work
     for extension, _ in iterator():
         if hasattr(extension, "custom_generate_chat_prompt"):
             return extension.custom_generate_chat_prompt(text, state, **kwargs)
@@ -88,8 +88,8 @@ def _apply_custom_generate_chat_prompt(text, state, **kwargs):
     return None
 
 
-# Extension that modifies the input parameters before they are used
 def _apply_state_modifier_extensions(state):
+    # Extension that modifies the input parameters before they are used
     for extension, _ in iterator():
         if hasattr(extension, "state_modifier"):
             state = getattr(extension, "state_modifier")(state)
@@ -97,8 +97,8 @@ def _apply_state_modifier_extensions(state):
     return state
 
 
-# Extension that modifies the chat history before it is used
 def _apply_history_modifier_extensions(history):
+    # Extension that modifies the chat history before it is used
     for extension, _ in iterator():
         if hasattr(extension, "history_modifier"):
             history = getattr(extension, "history_modifier")(history)
@@ -106,8 +106,8 @@ def _apply_history_modifier_extensions(history):
     return history
 
 
-# Extension functions that override the default tokenizer output - The order of execution is not defined
 def _apply_tokenizer_extensions(function_name, state, prompt, input_ids, input_embeds):
+    # Extension functions that override the default tokenizer output - The order of execution is not defined
     for extension, _ in iterator():
         if hasattr(extension, function_name):
             prompt, input_ids, input_embeds = getattr(extension, function_name)(
@@ -117,17 +117,17 @@ def _apply_tokenizer_extensions(function_name, state, prompt, input_ids, input_e
     return prompt, input_ids, input_embeds
 
 
-# Allow extensions to add their own logits processors to the stack being run.
-# Each extension would call `processor_list.append({their LogitsProcessor}())`.
 def _apply_logits_processor_extensions(function_name, processor_list, input_ids):
+    # Allow extensions to add their own logits processors to the stack being run.
+    # Each extension would call `processor_list.append({their LogitsProcessor}())`.
     for extension, _ in iterator():
         if hasattr(extension, function_name):
             getattr(extension, function_name)(processor_list, input_ids)
 
 
-# Get prompt length in tokens after applying extension functions which override the default tokenizer output
-# currently only the first one will work
 def _apply_custom_tokenized_length(prompt):
+    # Get prompt length in tokens after applying extension functions which override the default tokenizer output
+    # currently only the first one will work
     for extension, _ in iterator():
         if hasattr(extension, "custom_tokenized_length"):
             return getattr(extension, "custom_tokenized_length")(prompt)
@@ -135,8 +135,8 @@ def _apply_custom_tokenized_length(prompt):
     return None
 
 
-# Custom generate reply handling - currently only the first one will work
 def _apply_custom_generate_reply():
+    # Custom generate reply handling - currently only the first one will work
     for extension, _ in iterator():
         if hasattr(extension, "custom_generate_reply"):
             return getattr(extension, "custom_generate_reply")
