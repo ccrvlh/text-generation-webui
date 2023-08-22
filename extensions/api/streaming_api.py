@@ -7,7 +7,7 @@ from websockets.server import serve
 from extensions.api.util import build_parameters, try_start_cloudflared, with_api_lock
 from app import shared
 from app.front.chat import generate_chat_reply
-from app.engine.text_generation import generate_reply
+from app.engine.textgen import generate_reply
 
 PATH = '/api/v1/stream'
 

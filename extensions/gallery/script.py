@@ -2,7 +2,7 @@ from pathlib import Path
 
 import gradio as gr
 
-from app.front.html_generator import get_image_cache
+from app.front.generator import get_image_cache
 from app.shared import gradio
 
 

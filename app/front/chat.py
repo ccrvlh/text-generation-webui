@@ -12,9 +12,9 @@ from PIL import Image
 
 import app.shared as shared
 from app.extensions import apply_extensions
-from app.front.html_generator import chat_html_wrapper, make_thumbnail
+from app.front.generator import chat_html_wrapper, make_thumbnail
 from app.utils.logging import logger
-from app.engine.text_generation import (
+from app.engine.textgen import (
     generate_reply,
     get_encoded_length,
     get_max_prompt_length

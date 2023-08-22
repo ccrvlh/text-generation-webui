@@ -12,7 +12,7 @@ from app.settings import (
     get_model_settings_from_yamls,
     update_model_parameters
 )
-from app.engine.text_generation import encode
+from app.engine.textgen import encode
 
 
 def load_past_evaluations():

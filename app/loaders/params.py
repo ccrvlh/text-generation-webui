@@ -1,8 +1,8 @@
 import functools
-
 import gradio as gr
 
 from app import shared
+
 
 loaders_and_params = {
     'AutoGPTQ': [

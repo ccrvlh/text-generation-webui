@@ -4,20 +4,19 @@ import random
 import re
 import time
 import traceback
-
 import numpy as np
 import torch
 import transformers
+
 from transformers import LogitsProcessorList
 
-import app.shared as shared
-
+from app import shared
 from app.utils.callbacks import Iteratorize
 from app.utils.callbacks import Stream
 from app.utils.callbacks import _StopEverythingStoppingCriteria
 from app.extensions import apply_extensions
-from app.front.html_generator import generate_4chan_html
-from app.front.html_generator import generate_basic_html
+from app.front.generator import generate_4chan_html
+from app.front.generator import generate_basic_html
 from app.utils.logging import logger
 from app.models import clear_torch_cache
 from app.models import local_rank

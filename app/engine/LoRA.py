@@ -1,9 +1,9 @@
-from pathlib import Path
-
 import torch
+
+from pathlib import Path
 from peft import PeftModel
 
-import app.shared as shared
+from app import shared
 from app.utils.logging import logger
 from app.models import reload_model
 
@@ -56,9 +56,8 @@ def add_lora_exllama(lora_names):
         return
 
 
-# Adapted from https://github.com/Ph0rk0z/text-generation-webui-testing
 def add_lora_autogptq(lora_names):
-
+    # Adapted from https://github.com/Ph0rk0z/text-generation-webui-testing
     try:
         from auto_gptq import get_gptq_peft_model
         from auto_gptq.utils.peft_utils import GPTQLoraConfig

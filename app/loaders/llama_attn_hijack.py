@@ -1,12 +1,13 @@
 import math
 import sys
-from typing import Optional, Tuple
-
 import torch
 import torch.nn as nn
 import transformers.models.llama.modeling_llama
 
-import app.shared as shared
+from typing import Optional
+from typing import Tuple
+
+from app import shared
 from app.utils.logging import logger
 
 if shared.args.xformers:

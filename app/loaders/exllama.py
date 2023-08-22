@@ -1,10 +1,9 @@
 from pathlib import Path
-
 from torch import version as torch_version
 
 from app import shared
 from app.utils.logging import logger
-from app.engine.text_generation import get_max_prompt_length
+from app.engine.textgen import get_max_prompt_length
 
 try:
     from exllama.generator import ExLlamaGenerator

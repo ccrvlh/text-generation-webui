@@ -7,9 +7,9 @@ https://abetlen.github.io/llama-cpp-python/
 '''
 
 import re
-from functools import partial
-
 import torch
+
+from functools import partial
 
 from app import shared
 from app.utils.callbacks import Iteratorize

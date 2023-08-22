@@ -1,14 +1,15 @@
 import inspect
 import re
 import sys
-from pathlib import Path
-
 import accelerate
 import torch
 import transformers
-from transformers import AutoConfig, AutoModelForCausalLM
-
 import app.shared as shared
+
+from pathlib import Path
+from transformers import AutoConfig
+from transformers import AutoModelForCausalLM
+
 from app.utils.logging import logger
 
 sys.path.insert(0, str(Path("repositories/GPTQ-for-LLaMa")))

@@ -309,7 +309,7 @@ def GPTQ_loader(model_name):
 
 
 def AutoGPTQ_loader(model_name):
-    import app.loaders.AutoGPTQ_loader
+    import app.loaders.gptq_auto
 
     return modules.AutoGPTQ_loader.load_quantized(model_name)
 

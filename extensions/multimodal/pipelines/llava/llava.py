@@ -10,7 +10,7 @@ from transformers import CLIPImageProcessor, CLIPVisionModel
 from app.extensions.multimodal.abstract_pipeline import AbstractMultimodalPipeline
 from app import shared
 from app.utils.logging import logger
-from app.engine.text_generation import encode
+from app.engine.textgen import encode
 
 
 class LLaVA_v0_Pipeline(AbstractMultimodalPipeline):

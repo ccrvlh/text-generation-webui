@@ -1,25 +1,12 @@
 import os
 import warnings
 
-from app import shared
-from app.engine import training
-from app.front import ui
-from app.front import chat
-from app.loaders import loaders
-from app.utils import utils
-from app.utils.logging import logger
-from app.utils.block_requests import OpenMonkeyPatch, RequestBlocker
-
 os.environ['GRADIO_ANALYTICS_ENABLED'] = 'False'
 os.environ['BITSANDBYTES_NOWELCOME'] = '1'
 warnings.filterwarnings('ignore', category=UserWarning, message='TypedStorage is deprecated')
 
-with RequestBlocker():
-    import gradio as gr
 
 import matplotlib
-matplotlib.use('Agg')  # This fixes LaTeX rendering on some systems
-
 import importlib
 import json
 import math
@@ -28,34 +15,47 @@ import re
 import sys
 import time
 import traceback
-from functools import partial
-from pathlib import Path
-from threading import Lock
-
 import psutil
 import torch
 import yaml
+
+from functools import partial
+from pathlib import Path
+from threading import Lock
 from PIL import Image
 
-import app.extensions.extensions as extensions_module
+matplotlib.use('Agg')  # This fixes LaTeX rendering on some systems
+
+from app import shared
 from app import presets
+from app.engine import training
+from app.front import ui
+from app.front import chat
+from app.loaders import params
 from app.extensions import apply_extensions
-from app.utils.github import clone_or_pull_repository
-from app.front.html_generator import chat_html_wrapper
-from app.engine.LoRA import add_lora_to_model
-from app.models import load_model, unload_model
-from app.settings import (
-    apply_model_settings_to_state,
-    get_model_settings_from_yamls,
-    save_model_settings,
-    update_model_parameters
-)
-from app.engine.text_generation import (
-    generate_reply_wrapper,
-    get_encoded_length,
-    stop_everything_event
-)
+from app.utils import utils
+from app.utils.logging import logger
 from app.utils.utils import gradio
+from app.utils.blocker import OpenMonkeyPatch
+from app.utils.blocker import RequestBlocker
+from app.utils.github import clone_or_pull_repository
+from app.front.generator import chat_html_wrapper
+from app.engine.LoRA import add_lora_to_model
+from app.models import load_model
+from app.models import unload_model
+from app.settings import apply_model_settings_to_state
+from app.settings import get_model_settings_from_yamls
+from app.settings import save_model_settings
+from app.settings import update_model_parameters
+from app.engine.textgen import generate_reply_wrapper
+from app.engine.textgen import get_encoded_length
+from app.engine.textgen import stop_everything_event
+
+import app.extensions as extensions_module
+
+
+with RequestBlocker():
+    import gradio as gr
 
 
 def load_model_wrapper(selected_model, loader, autoload=False):
@@ -268,7 +268,7 @@ def create_model_menus():
             with gr.Row():
                 shared.gradio['model_status'] = gr.Markdown('No model is loaded' if shared.model_name == 'None' else 'Ready')
 
-    shared.gradio['loader'].change(loaders.make_loader_params_visible, gradio('loader'), gradio(loaders.get_all_params()))
+    shared.gradio['loader'].change(params.make_loader_params_visible, gradio('loader'), gradio(params.get_all_params()))
 
     # In this event handler, the interface state is read and updated
     # with the model defaults (if any), and then the model is loaded

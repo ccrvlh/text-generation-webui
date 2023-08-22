@@ -1,6 +1,5 @@
 import builtins
 import io
-
 import requests
 
 from app.utils.logging import logger

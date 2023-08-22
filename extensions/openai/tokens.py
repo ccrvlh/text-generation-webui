@@ -1,5 +1,5 @@
 from extensions.openai.utils import float_list_to_base64
-from app.engine.text_generation import encode, decode
+from app.engine.textgen import encode, decode
 
 
 def token_count(prompt):
