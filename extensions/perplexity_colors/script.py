@@ -3,7 +3,7 @@ import torch
 from transformers import LogitsProcessor
 import numpy as np
 
-from modules import shared
+from app.modules import shared
 
 params = {
     'color_by_perplexity': False,

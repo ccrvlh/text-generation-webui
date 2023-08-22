@@ -4,9 +4,9 @@ from pathlib import Path
 import elevenlabs
 import gradio as gr
 
-from modules import chat, shared
-from modules.utils import gradio
-from modules.logging_colors import logger
+from app.modules import chat, shared
+from app.modules.utils import gradio
+from app.modules.logging_colors import logger
 
 params = {
     'activate': True,

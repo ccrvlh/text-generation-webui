@@ -3,7 +3,7 @@ from pathlib import Path
 
 import yaml
 
-from modules import shared, ui
+from app.modules import shared, ui
 
 
 def get_model_settings_from_yamls(model):

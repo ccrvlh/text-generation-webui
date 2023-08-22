@@ -7,15 +7,15 @@ from torch.nn import CrossEntropyLoss
 from transformers import GenerationConfig, PretrainedConfig, PreTrainedModel
 from transformers.modeling_outputs import CausalLMOutputWithPast
 
-from modules import shared
-from modules.logging_colors import logger
+from app.modules import shared
+from app.modules.logging_colors import logger
 
 try:
     from exllama.model import ExLlama, ExLlamaCache, ExLlamaConfig
 except:
     logger.warning('Exllama module failed to load. Will attempt to load from repositories.')
     try:
-        from modules.relative_imports import RelativeImport
+        from app.modules.relative_imports import RelativeImport
 
         with RelativeImport("repositories/exllama"):
             from model import ExLlama, ExLlamaCache, ExLlamaConfig

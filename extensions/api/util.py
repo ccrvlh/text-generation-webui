@@ -6,9 +6,9 @@ import traceback
 from threading import Thread
 from typing import Callable, Optional
 
-from modules import shared
-from modules.chat import load_character_memoized
-from modules.presets import load_preset_memoized
+from app.modules import shared
+from app.modules.chat import load_character_memoized
+from app.modules.presets import load_preset_memoized
 
 
 # We use a thread local to store the asyncio lock, so that each thread

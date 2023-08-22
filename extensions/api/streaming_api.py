@@ -5,9 +5,9 @@ from threading import Thread
 from websockets.server import serve
 
 from extensions.api.util import build_parameters, try_start_cloudflared, with_api_lock
-from modules import shared
-from modules.chat import generate_chat_reply
-from modules.text_generation import generate_reply
+from app.modules import shared
+from app.modules.chat import generate_chat_reply
+from app.modules.text_generation import generate_reply
 
 PATH = '/api/v1/stream'
 

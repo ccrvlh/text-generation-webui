@@ -8,8 +8,8 @@ import gradio as gr
 import torch
 
 from extensions.multimodal.multimodal_embedder import MultimodalEmbedder
-from modules import shared
-from modules.logging_colors import logger
+from app.modules import shared
+from app.modules.logging_colors import logger
 
 params = {
     "add_all_images_to_prompt": False,

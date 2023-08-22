@@ -11,9 +11,9 @@ from functools import partial
 
 import torch
 
-from modules import shared
-from modules.callbacks import Iteratorize
-from modules.logging_colors import logger
+from app.modules import shared
+from app.modules.callbacks import Iteratorize
+from app.modules.logging_colors import logger
 
 if torch.cuda.is_available():
     from llama_cpp_cuda import Llama, LlamaCache, LogitsProcessorList

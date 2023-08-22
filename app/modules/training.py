@@ -17,7 +17,7 @@ from pathlib import Path
 import gradio as gr
 import torch
 import transformers
-from modules.models import load_model, unload_model
+from app.modules.models import load_model, unload_model
 
 from datasets import Dataset, load_dataset
 from peft import (
@@ -27,14 +27,14 @@ from peft import (
     set_peft_model_state_dict
 )
 
-from modules import shared, ui, utils
-from modules.evaluate import (
+from app.modules import shared, ui, utils
+from app.modules.evaluate import (
     calculate_perplexity,
     generate_markdown_table,
     save_past_evaluations
 )
-from modules.logging_colors import logger
-from modules.utils import natural_keys
+from app.modules.logging_colors import logger
+from app.modules.utils import natural_keys
 
 # This mapping is from a very recent commit, not yet released.
 # If not available, default to a backup map for some common model types.

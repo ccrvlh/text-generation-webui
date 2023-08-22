@@ -7,10 +7,10 @@ from huggingface_hub import hf_hub_download
 from PIL import Image
 from transformers import CLIPImageProcessor, CLIPVisionModel
 
-from extensions.multimodal.abstract_pipeline import AbstractMultimodalPipeline
-from modules import shared
-from modules.logging_colors import logger
-from modules.text_generation import encode
+from app.extensions.multimodal.abstract_pipeline import AbstractMultimodalPipeline
+from app.modules import shared
+from app.modules.logging_colors import logger
+from app.modules.text_generation import encode
 
 
 class LLaVA_v0_Pipeline(AbstractMultimodalPipeline):

@@ -3,15 +3,15 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Thread
 
 from extensions.api.util import build_parameters, try_start_cloudflared
-from modules import shared
-from modules.chat import generate_chat_reply
-from modules.LoRA import add_lora_to_model
-from modules.models import load_model, unload_model
-from modules.models_settings import (get_model_settings_from_yamls,
+from app.modules import shared
+from app.modules.chat import generate_chat_reply
+from app.modules.LoRA import add_lora_to_model
+from app.modules.models import load_model, unload_model
+from app.modules.models_settings import (get_model_settings_from_yamls,
                                      update_model_parameters)
-from modules.text_generation import (encode, generate_reply,
+from app.modules.text_generation import (encode, generate_reply,
                                      stop_everything_event)
-from modules.utils import get_available_models
+from app.modules.utils import get_available_models
 
 
 def get_model_info():

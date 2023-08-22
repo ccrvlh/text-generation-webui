@@ -5,8 +5,8 @@ import gradio as gr
 import torch
 
 from extensions.silero_tts import tts_preprocessor
-from modules import chat, shared
-from modules.utils import gradio
+from app.modules import chat, shared
+from app.modules.utils import gradio
 
 torch._C._jit_set_profiling_mode(False)
 

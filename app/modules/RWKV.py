@@ -5,8 +5,8 @@ from pathlib import Path
 import numpy as np
 from tokenizers import Tokenizer
 
-import modules.shared as shared
-from modules.callbacks import Iteratorize
+import app.modules.shared as shared
+from app.modules.callbacks import Iteratorize
 
 np.set_printoptions(precision=4, suppress=True, linewidth=200)
 

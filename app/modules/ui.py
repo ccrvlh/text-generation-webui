@@ -4,16 +4,16 @@ from pathlib import Path
 import gradio as gr
 import torch
 
-from modules import shared
+from app.modules import shared
 
 
-with open(Path(__file__).resolve().parent / '../css/main.css', 'r') as f:
+with open(Path(__file__).resolve().parent / '../../static/css/main.css', 'r') as f:
     css = f.read()
-with open(Path(__file__).resolve().parent / '../css/chat.css', 'r') as f:
+with open(Path(__file__).resolve().parent / '../../static/css/chat.css', 'r') as f:
     chat_css = f.read()
-with open(Path(__file__).resolve().parent / '../css/main.js', 'r') as f:
+with open(Path(__file__).resolve().parent / '../../static/css/main.js', 'r') as f:
     main_js = f.read()
-with open(Path(__file__).resolve().parent / '../css/chat.js', 'r') as f:
+with open(Path(__file__).resolve().parent / '../../static/css/chat.js', 'r') as f:
     chat_js = f.read()
 
 refresh_symbol = '🔄'

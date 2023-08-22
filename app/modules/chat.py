@@ -10,16 +10,16 @@ import gradio as gr
 import yaml
 from PIL import Image
 
-import modules.shared as shared
-from modules.extensions import apply_extensions
-from modules.html_generator import chat_html_wrapper, make_thumbnail
-from modules.logging_colors import logger
-from modules.text_generation import (
+import app.modules.shared as shared
+from app.modules.extensions import apply_extensions
+from app.modules.html_generator import chat_html_wrapper, make_thumbnail
+from app.modules.logging_colors import logger
+from app.modules.text_generation import (
     generate_reply,
     get_encoded_length,
     get_max_prompt_length
 )
-from modules.utils import (
+from app.modules.utils import (
     delete_file,
     get_available_characters,
     replace_all,

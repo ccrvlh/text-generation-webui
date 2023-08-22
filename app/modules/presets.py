@@ -30,6 +30,10 @@ def load_preset(name):
     }
 
     if name not in ['None', None, '']:
+        from os.path import abspath
+        filename = abspath(f'presets/{name}.yaml')
+        # p = Path()
+        print(filename)
         with open(Path(f'presets/{name}.yaml'), 'r') as infile:
             preset = yaml.safe_load(infile)
 

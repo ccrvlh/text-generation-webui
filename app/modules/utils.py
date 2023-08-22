@@ -3,8 +3,8 @@ import re
 from datetime import datetime
 from pathlib import Path
 
-from modules import shared
-from modules.logging_colors import logger
+from app.modules import shared
+from app.modules.logging_colors import logger
 
 
 # Helper function to get multiple values from shared.gradio
@@ -122,7 +122,7 @@ def get_datasets(path: str, ext: str):
 
 
 def get_available_chat_styles():
-    return sorted(set(('-'.join(k.stem.split('-')[1:]) for k in Path('css').glob('chat_style*.css'))), key=natural_keys)
+    return sorted(set(('-'.join(k.stem.split('-')[1:]) for k in Path('static/css').glob('chat_style*.css'))), key=natural_keys)
 
 
 def get_available_sessions():

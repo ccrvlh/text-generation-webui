@@ -16,8 +16,8 @@ from monkeypatch.peft_tuners_lora_monkey_patch import (
     replace_peft_model_with_gptq_lora_model
 )
 
-from modules import shared
-from modules.GPTQ_loader import find_quantized_model_file
+from app.modules import shared
+from app.modules.GPTQ_loader import find_quantized_model_file
 
 replace_peft_model_with_gptq_lora_model()
 

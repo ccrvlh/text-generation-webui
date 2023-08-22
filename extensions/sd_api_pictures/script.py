@@ -10,9 +10,9 @@ import requests
 import torch
 from PIL import Image
 
-from modules import shared
-from modules.models import reload_model, unload_model
-from modules.ui import create_refresh_button
+from app.modules import shared
+from app.modules.models import reload_model, unload_model
+from app.modules.ui import create_refresh_button
 
 torch._C._jit_set_profiling_mode(False)
 

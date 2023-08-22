@@ -6,22 +6,23 @@ from pathlib import Path
 import markdown
 from PIL import Image, ImageOps
 
-from modules.utils import get_available_chat_styles
+from app.modules.utils import get_available_chat_styles
 
 # This is to store the paths to the thumbnails of the profile pictures
 image_cache = {}
 
-with open(Path(__file__).resolve().parent / '../css/html_readable_style.css', 'r') as f:
+with open(Path(__file__).resolve().parent / '../../static/css/html_readable_style.css', 'r') as f:
     readable_css = f.read()
-with open(Path(__file__).resolve().parent / '../css/html_4chan_style.css', 'r') as css_f:
+with open(Path(__file__).resolve().parent / '../../static/css/html_4chan_style.css', 'r') as css_f:
     _4chan_css = css_f.read()
-with open(Path(__file__).resolve().parent / '../css/html_instruct_style.css', 'r') as f:
+with open(Path(__file__).resolve().parent / '../../static/css/html_instruct_style.css', 'r') as f:
     instruct_css = f.read()
 
 # Custom chat styles
 chat_styles = {}
 for k in get_available_chat_styles():
-    chat_styles[k] = open(Path(f'css/chat_style-{k}.css'), 'r').read()
+    chat_styles[k] = open(Path(__file__).resolve().parent / f'../../static/css/chat_style-{k}.css', 'r').read()
+    # chat_styles[k] = open(Path(f'static/css/chat_style-{k}.css'), 'r').read()
 
 
 def fix_newlines(string):

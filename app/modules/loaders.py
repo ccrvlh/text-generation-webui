@@ -2,7 +2,7 @@ import functools
 
 import gradio as gr
 
-from modules import shared
+from app.modules import shared
 
 loaders_and_params = {
     'AutoGPTQ': [

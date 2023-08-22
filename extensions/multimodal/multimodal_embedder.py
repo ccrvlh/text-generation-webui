@@ -8,9 +8,9 @@ import torch
 from PIL import Image
 
 from extensions.multimodal.pipeline_loader import load_pipeline
-from modules import shared
-from modules.logging_colors import logger
-from modules.text_generation import encode, get_max_prompt_length
+from app.modules import shared
+from app.modules.logging_colors import logger
+from app.modules.text_generation import encode, get_max_prompt_length
 
 
 @dataclass

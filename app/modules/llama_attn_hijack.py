@@ -6,8 +6,8 @@ import torch
 import torch.nn as nn
 import transformers.models.llama.modeling_llama
 
-import modules.shared as shared
-from modules.logging_colors import logger
+import app.modules.shared as shared
+from app.modules.logging_colors import logger
 
 if shared.args.xformers:
     try:

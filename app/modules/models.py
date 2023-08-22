@@ -17,10 +17,10 @@ from transformers import (
     BitsAndBytesConfig,
 )
 
-import modules.shared as shared
-from modules import llama_attn_hijack, sampler_hijack
-from modules.logging_colors import logger
-from modules.models_settings import infer_loader
+import app.modules.shared as shared
+from app.modules import llama_attn_hijack, sampler_hijack
+from app.modules.logging_colors import logger
+from app.modules.models_settings import infer_loader
 
 transformers.logging.set_verbosity_error()
 
@@ -32,7 +32,7 @@ if shared.args.deepspeed:
         is_deepspeed_zero3_enabled
     )
 
-    from modules.deepspeed_parameters import generate_ds_config
+    from app.modules.deepspeed_parameters import generate_ds_config
 
     # Distributed setup
     local_rank = shared.args.local_rank if shared.args.local_rank is not None else int(os.getenv("LOCAL_RANK", "0"))
@@ -248,7 +248,7 @@ def flexgen_loader(model_name):
 
 
 def RWKV_loader(model_name):
-    from modules.RWKV import RWKVModel, RWKVTokenizer
+    from app.modules.RWKV import RWKVModel, RWKVTokenizer
 
     model = RWKVModel.from_pretrained(Path(f'{shared.args.model_dir}/{model_name}'), dtype="fp32" if shared.args.cpu else "bf16" if shared.args.bf16 else "fp16", device="cpu" if shared.args.cpu else "cuda")
     tokenizer = RWKVTokenizer.from_pretrained(Path(shared.args.model_dir))
@@ -256,7 +256,7 @@ def RWKV_loader(model_name):
 
 
 def llamacpp_loader(model_name):
-    from modules.llamacpp_model import LlamaCppModel
+    from app.modules.llamacpp_model import LlamaCppModel
 
     path = Path(f'{shared.args.model_dir}/{model_name}')
     if path.is_file():
@@ -270,7 +270,7 @@ def llamacpp_loader(model_name):
 
 
 def llamacpp_HF_loader(model_name):
-    from modules.llamacpp_hf import LlamacppHF
+    from app.modules.llamacpp_hf import LlamacppHF
 
     for fname in ["oobabooga_llama-tokenizer", "llama-tokenizer"]:
         path = Path(f'{shared.args.model_dir}/{fname}')
@@ -295,13 +295,13 @@ def GPTQ_loader(model_name):
     # Monkey patch
     if shared.args.monkey_patch:
         logger.warning("Applying the monkey patch for using LoRAs with GPTQ models. It may cause undefined behavior outside its intended scope.")
-        from modules.monkey_patch_gptq_lora import load_model_llama
+        from app.modules.monkey_patch_gptq_lora import load_model_llama
 
         model, _ = load_model_llama(model_name)
 
     # No monkey patch
     else:
-        import modules.GPTQ_loader
+        import app.modules.GPTQ_loader
 
         model = modules.GPTQ_loader.load_quantized(model_name)
 
@@ -309,20 +309,20 @@ def GPTQ_loader(model_name):
 
 
 def AutoGPTQ_loader(model_name):
-    import modules.AutoGPTQ_loader
+    import app.modules.AutoGPTQ_loader
 
     return modules.AutoGPTQ_loader.load_quantized(model_name)
 
 
 def ExLlama_loader(model_name):
-    from modules.exllama import ExllamaModel
+    from app.modules.exllama import ExllamaModel
 
     model, tokenizer = ExllamaModel.from_pretrained(model_name)
     return model, tokenizer
 
 
 def ExLlama_HF_loader(model_name):
-    from modules.exllama_hf import ExllamaHF
+    from app.modules.exllama_hf import ExllamaHF
 
     return ExllamaHF.from_pretrained(model_name)
 

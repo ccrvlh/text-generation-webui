@@ -10,16 +10,16 @@ import torch
 import transformers
 from transformers import LogitsProcessorList
 
-import modules.shared as shared
-from modules.callbacks import (
+import app.modules.shared as shared
+from app.modules.callbacks import (
     Iteratorize,
     Stream,
     _StopEverythingStoppingCriteria
 )
-from modules.extensions import apply_extensions
-from modules.html_generator import generate_4chan_html, generate_basic_html
-from modules.logging_colors import logger
-from modules.models import clear_torch_cache, local_rank
+from app.modules.extensions import apply_extensions
+from app.modules.html_generator import generate_4chan_html, generate_basic_html
+from app.modules.logging_colors import logger
+from app.modules.models import clear_torch_cache, local_rank
 
 
 def generate_reply(*args, **kwargs):
