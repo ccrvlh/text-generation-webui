@@ -2,7 +2,7 @@ import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Thread
 
-from extensions.api.util import build_parameters, try_start_cloudflared
+from app.api.util import build_parameters, try_start_cloudflared
 from app import shared
 from app.front.chat import generate_chat_reply
 from app.engine.LoRA import add_lora_to_model

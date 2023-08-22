@@ -1,3 +1,4 @@
+import argparse
 import os
 import re
 from datetime import datetime
@@ -92,31 +93,32 @@ def get_available_models():
 
 
 def get_available_presets():
-    return sorted(
-        set((k.stem for k in Path("presets").glob("*.yaml"))), key=natural_keys
-    )
+    return sorted(set((k.stem for k in Path("presets").glob("*.yaml"))), key=natural_keys)
 
 
 def get_available_prompts():
     prompts = []
     files = set((k.stem for k in Path("prompts").glob("*.txt")))
-    prompts += sorted(
-        [k for k in files if re.match("^[0-9]", k)], key=natural_keys, reverse=True
-    )
+    prompts += sorted([k for k in files if re.match("^[0-9]", k)], key=natural_keys, reverse=True)
     prompts += sorted([k for k in files if re.match("^[^0-9]", k)], key=natural_keys)
-    prompts += [
-        "Instruct-" + k for k in get_available_instruction_templates() if k != "None"
-    ]
+    prompts += ["Instruct-" + k for k in get_available_instruction_templates() if k != "None"]
     prompts += ["None"]
     return prompts
 
 
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ("yes", "true", "t", "y", "1"):
+        return True
+    elif v.lower() in ("no", "false", "f", "n", "0"):
+        return False
+    else:
+        raise argparse.ArgumentTypeError("Boolean value expected.")
+
+
 def get_available_characters():
-    paths = (
-        x
-        for x in Path("characters").iterdir()
-        if x.suffix in (".json", ".yaml", ".yml")
-    )
+    paths = (x for x in Path("characters").iterdir() if x.suffix in (".json", ".yaml", ".yml"))
     return ["None"] + sorted(
         set((k.stem for k in paths if k.stem != "instruction-following")),
         key=natural_keys,
@@ -127,9 +129,7 @@ def get_available_instruction_templates():
     path = "characters/instruction-following"
     paths = []
     if os.path.exists(path):
-        paths = (
-            x for x in Path(path).iterdir() if x.suffix in (".json", ".yaml", ".yml")
-        )
+        paths = (x for x in Path(path).iterdir() if x.suffix in (".json", ".yaml", ".yml"))
 
     return ["None"] + sorted(set((k.stem for k in paths)), key=natural_keys)
 
@@ -167,25 +167,14 @@ def get_datasets(path: str, ext: str):
         )
 
     return ["None"] + sorted(
-        set(
-            [
-                k.stem
-                for k in Path(path).glob(f"*.{ext}")
-                if k.stem != "put-trainer-datasets-here"
-            ]
-        ),
+        set([k.stem for k in Path(path).glob(f"*.{ext}") if k.stem != "put-trainer-datasets-here"]),
         key=natural_keys,
     )
 
 
 def get_available_chat_styles():
     return sorted(
-        set(
-            (
-                "-".join(k.stem.split("-")[1:])
-                for k in Path("static/css").glob("chat_style*.css")
-            )
-        ),
+        set(("-".join(k.stem.split("-")[1:]) for k in Path("static/css").glob("chat_style*.css"))),
         key=natural_keys,
     )
 
