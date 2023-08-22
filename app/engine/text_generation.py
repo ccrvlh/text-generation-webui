@@ -19,7 +19,7 @@ from app.utils.callbacks import (
 from app.extensions.extensions import apply_extensions
 from app.front.html_generator import generate_4chan_html, generate_basic_html
 from app.utils.logging_colors import logger
-from app.engine.models import clear_torch_cache, local_rank
+from app.models import clear_torch_cache, local_rank
 
 
 def generate_reply(*args, **kwargs):

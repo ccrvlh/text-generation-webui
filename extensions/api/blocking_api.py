@@ -6,7 +6,7 @@ from extensions.api.util import build_parameters, try_start_cloudflared
 from app import shared
 from app.front.chat import generate_chat_reply
 from app.engine.LoRA import add_lora_to_model
-from app.engine.models import load_model, unload_model
+from app.models import load_model, unload_model
 from app.settings import (get_model_settings_from_yamls,
                                      update_model_parameters)
 from app.engine.text_generation import (encode, generate_reply,

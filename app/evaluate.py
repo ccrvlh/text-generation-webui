@@ -7,7 +7,7 @@ from datasets import load_dataset
 from tqdm import tqdm
 
 from app import shared
-from app.engine.models import load_model, unload_model
+from app.models import load_model, unload_model
 from app.settings import (
     get_model_settings_from_yamls,
     update_model_parameters

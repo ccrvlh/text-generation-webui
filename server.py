@@ -8,7 +8,7 @@ from app.front import chat
 from app.loaders import loaders
 from app.utils import utils
 from app.utils.logging_colors import logger
-from app.modules.block_requests import OpenMonkeyPatch, RequestBlocker
+from app.utils.block_requests import OpenMonkeyPatch, RequestBlocker
 
 os.environ['GRADIO_ANALYTICS_ENABLED'] = 'False'
 os.environ['BITSANDBYTES_NOWELCOME'] = '1'
@@ -38,12 +38,12 @@ import yaml
 from PIL import Image
 
 import app.extensions.extensions as extensions_module
-from app.modules import presets
+from app import presets
 from app.extensions.extensions import apply_extensions
 from app.utils.github import clone_or_pull_repository
 from app.front.html_generator import chat_html_wrapper
 from app.engine.LoRA import add_lora_to_model
-from app.engine.models import load_model, unload_model
+from app.models import load_model, unload_model
 from app.settings import (
     apply_model_settings_to_state,
     get_model_settings_from_yamls,

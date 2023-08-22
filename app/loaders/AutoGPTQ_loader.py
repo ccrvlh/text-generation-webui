@@ -4,7 +4,7 @@ from auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig
 
 import app.shared as shared
 from app.utils.logging_colors import logger
-from app.engine.models import get_max_memory_dict
+from app.models import get_max_memory_dict
 
 
 def load_quantized(model_name):

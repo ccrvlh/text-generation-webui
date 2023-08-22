@@ -5,7 +5,7 @@ from peft import PeftModel
 
 import app.shared as shared
 from app.utils.logging_colors import logger
-from app.engine.models import reload_model
+from app.models import reload_model
 
 
 def add_lora_to_model(lora_names):

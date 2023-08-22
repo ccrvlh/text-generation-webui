@@ -20,7 +20,7 @@ from pathlib import Path
 import gradio as gr
 import torch
 import transformers
-from app.engine.models import load_model, unload_model
+from app.models import load_model, unload_model
 
 from datasets import Dataset, load_dataset
 from peft import (
@@ -31,7 +31,7 @@ from peft import (
 )
 
 from app import shared
-from app.modules.evaluate import (
+from app.evaluate import (
     calculate_perplexity,
     generate_markdown_table,
     save_past_evaluations

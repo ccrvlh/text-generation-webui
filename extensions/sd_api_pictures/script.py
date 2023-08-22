@@ -11,7 +11,7 @@ import torch
 from PIL import Image
 
 from app import shared
-from app.engine.models import reload_model, unload_model
+from app.models import reload_model, unload_model
 from app.front.ui import create_refresh_button
 
 torch._C._jit_set_profiling_mode(False)
