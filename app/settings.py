@@ -7,6 +7,10 @@ from app import shared
 from app.front import ui
 
 
+def load_settings():
+    pass
+
+
 def get_model_settings(model):
     settings = shared.model_config
     model_settings = {}
@@ -32,10 +36,7 @@ def update_model_parameters(state, initial=False):
             gpu_memories.append(value)
             continue
 
-        if (
-            initial
-            and vars(shared.args)[element] != vars(shared.args_defaults)[element]
-        ):
+        if initial and vars(shared.args)[element] != vars(shared.args_defaults)[element]:
             continue
 
         # Setting null defaults
@@ -62,8 +63,7 @@ def update_model_parameters(state, initial=False):
             break
 
     if not (
-        initial
-        and vars(shared.args)["gpu_memory"] != vars(shared.args_defaults)["gpu_memory"]
+        initial and vars(shared.args)["gpu_memory"] != vars(shared.args_defaults)["gpu_memory"]
     ):
         if found_positive:
             shared.args.gpu_memory = [f"{i}MiB" for i in gpu_memories]
@@ -85,8 +85,7 @@ def apply_model_settings_to_state(model, state):
 
         # If the user is using an alternative GPTQ loader, let them keep using it
         if not (
-            loader == "AutoGPTQ"
-            and state["loader"] in ["GPTQ-for-LLaMa", "ExLlama", "ExLlama_HF"]
+            loader == "AutoGPTQ" and state["loader"] in ["GPTQ-for-LLaMa", "ExLlama", "ExLlama_HF"]
         ):
             state["loader"] = loader
 
