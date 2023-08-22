@@ -3,8 +3,8 @@ import re
 from datetime import datetime
 from pathlib import Path
 
-from app.modules import shared
-from app.modules.logging_colors import logger
+from app import shared
+from app.utils.logging_colors import logger
 
 
 # Helper function to get multiple values from shared.gradio

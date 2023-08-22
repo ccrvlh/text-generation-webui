@@ -9,7 +9,7 @@
 # or the README.md in this directory.
 
 import logging
-from app.modules import shared
+from app import shared
 
 # Pick up host/port command line arguments
 host = shared.args.listen_host if shared.args.listen_host and shared.args.listen else '127.0.0.1'

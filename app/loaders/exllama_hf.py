@@ -7,8 +7,8 @@ from torch.nn import CrossEntropyLoss
 from transformers import GenerationConfig, PretrainedConfig, PreTrainedModel
 from transformers.modeling_outputs import CausalLMOutputWithPast
 
-from app.modules import shared
-from app.modules.logging_colors import logger
+from app import shared
+from app.utils.logging_colors import logger
 
 try:
     from exllama.model import ExLlama, ExLlamaCache, ExLlamaConfig

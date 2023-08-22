@@ -17,10 +17,10 @@ from transformers import (
     BitsAndBytesConfig,
 )
 
-import app.modules.shared as shared
-from app.modules import llama_attn_hijack, sampler_hijack
-from app.modules.logging_colors import logger
-from app.modules.models_settings import infer_loader
+import app.shared as shared
+from app.loaders import llama_attn_hijack, sampler_hijack
+from app.utils.logging_colors import logger
+from app.settings import infer_loader
 
 transformers.logging.set_verbosity_error()
 
@@ -32,7 +32,7 @@ if shared.args.deepspeed:
         is_deepspeed_zero3_enabled
     )
 
-    from app.modules.deepspeed_parameters import generate_ds_config
+    from app.extensions.deepspeed_parameters import generate_ds_config
 
     # Distributed setup
     local_rank = shared.args.local_rank if shared.args.local_rank is not None else int(os.getenv("LOCAL_RANK", "0"))
@@ -301,7 +301,7 @@ def GPTQ_loader(model_name):
 
     # No monkey patch
     else:
-        import app.modules.GPTQ_loader
+        import app.loaders.GPTQ_loader
 
         model = modules.GPTQ_loader.load_quantized(model_name)
 
@@ -309,7 +309,7 @@ def GPTQ_loader(model_name):
 
 
 def AutoGPTQ_loader(model_name):
-    import app.modules.AutoGPTQ_loader
+    import app.loaders.AutoGPTQ_loader
 
     return modules.AutoGPTQ_loader.load_quantized(model_name)
 

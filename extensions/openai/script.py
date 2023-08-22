@@ -4,7 +4,7 @@ import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Thread
 
-from app.modules import shared
+from app import shared
 
 from extensions.openai.tokens import token_count, token_encode, token_decode
 import extensions.openai.models as OAImodels

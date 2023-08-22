@@ -2,8 +2,9 @@ import re
 from pathlib import Path
 
 import yaml
+from app.front import ui
 
-from app.modules import shared, ui
+from app import shared
 
 
 def get_model_settings_from_yamls(model):

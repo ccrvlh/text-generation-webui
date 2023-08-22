@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import Tuple
 
 from extensions.multimodal.abstract_pipeline import AbstractMultimodalPipeline
-from app.modules import shared
-from app.modules.logging_colors import logger
+from app import shared
+from app.utils.logging_colors import logger
 
 
 def _get_available_pipeline_modules():

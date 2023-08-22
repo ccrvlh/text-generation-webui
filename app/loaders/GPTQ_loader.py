@@ -8,8 +8,8 @@ import torch
 import transformers
 from transformers import AutoConfig, AutoModelForCausalLM
 
-import app.modules.shared as shared
-from app.modules.logging_colors import logger
+import app.shared as shared
+from app.utils.logging_colors import logger
 
 sys.path.insert(0, str(Path("repositories/GPTQ-for-LLaMa")))
 

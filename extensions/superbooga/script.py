@@ -3,9 +3,10 @@ import textwrap
 
 import gradio as gr
 from bs4 import BeautifulSoup
+from app.front import chat
 
-from app.modules import chat, shared
-from app.modules.logging_colors import logger
+from app import shared
+from app.utils.logging_colors import logger
 
 from .chromadb import add_chunks_to_collector, make_collector
 from .download_urls import download_urls

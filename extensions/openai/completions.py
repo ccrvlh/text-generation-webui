@@ -6,8 +6,8 @@ import torch.nn.functional as F
 
 from transformers import LogitsProcessor, LogitsProcessorList
 
-from app.modules import shared
-from app.modules.text_generation import encode, decode, generate_reply
+from app import shared
+from app.engine.text_generation import encode, decode, generate_reply
 
 from extensions.openai.defaults import get_default_req_params, default, clamp
 from extensions.openai.utils import end_line, debug_msg

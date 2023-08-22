@@ -1,11 +1,11 @@
 import time
 import yaml
 import os
-from app.modules import shared
+from app import shared
 from extensions.openai.defaults import get_default_req_params
 from extensions.openai.utils import debug_msg
 from extensions.openai.errors import *
-from app.modules.text_generation import encode, generate_reply
+from app.engine.text_generation import encode, generate_reply
 
 
 def edits(instruction: str, input: str, temperature=1.0, top_p=1.0) -> dict:

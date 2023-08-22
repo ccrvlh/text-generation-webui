@@ -2,9 +2,9 @@ from pathlib import Path
 
 from torch import version as torch_version
 
-from app.modules import shared
-from app.modules.logging_colors import logger
-from app.modules.text_generation import get_max_prompt_length
+from app import shared
+from app.utils.logging_colors import logger
+from app.engine.text_generation import get_max_prompt_length
 
 try:
     from exllama.generator import ExLlamaGenerator

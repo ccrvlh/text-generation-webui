@@ -6,7 +6,7 @@ from threading import Thread
 import torch
 import transformers
 
-import app.modules.shared as shared
+import app.shared as shared
 
 
 class _StopEverythingStoppingCriteria(transformers.StoppingCriteria):

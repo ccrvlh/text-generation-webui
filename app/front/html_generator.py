@@ -6,7 +6,7 @@ from pathlib import Path
 import markdown
 from PIL import Image, ImageOps
 
-from app.modules.utils import get_available_chat_styles
+from app.utils.utils import get_available_chat_styles
 
 # This is to store the paths to the thumbnails of the profile pictures
 image_cache = {}

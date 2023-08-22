@@ -4,8 +4,8 @@ from functools import partial
 import gradio as gr
 
 import extensions
-import app.modules.shared as shared
-from app.modules.logging_colors import logger
+import app.shared as shared
+from app.utils.logging_colors import logger
 from inspect import signature
 
 

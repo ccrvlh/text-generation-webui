@@ -1,7 +1,7 @@
 import gradio as gr
 import speech_recognition as sr
 
-from app.modules import shared
+from app import shared
 
 input_hijack = {
     'state': False,

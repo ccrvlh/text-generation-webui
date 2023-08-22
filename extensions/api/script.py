@@ -1,6 +1,6 @@
 import extensions.api.blocking_api as blocking_api
 import extensions.api.streaming_api as streaming_api
-from app.modules import shared
+from app import shared
 
 
 def setup():

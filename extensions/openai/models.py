@@ -1,7 +1,7 @@
-from app.modules import shared
-from app.modules.utils import get_available_models
-from app.modules.models import load_model, unload_model
-from app.modules.models_settings import (get_model_settings_from_yamls,
+from app import shared
+from app.utils.utils import get_available_models
+from app.engine.models import load_model, unload_model
+from app.settings import (get_model_settings_from_yamls,
                                      update_model_parameters)
 
 from extensions.openai.embeddings import get_embeddings_model_name

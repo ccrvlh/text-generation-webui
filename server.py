@@ -1,7 +1,13 @@
 import os
 import warnings
 
-from app.modules.logging_colors import logger
+from app import shared
+from app.engine import training
+from app.front import ui
+from app.front import chat
+from app.loaders import loaders
+from app.utils import utils
+from app.utils.logging_colors import logger
 from app.modules.block_requests import OpenMonkeyPatch, RequestBlocker
 
 os.environ['GRADIO_ANALYTICS_ENABLED'] = 'False'
@@ -31,25 +37,25 @@ import torch
 import yaml
 from PIL import Image
 
-import app.modules.extensions as extensions_module
-from app.modules import chat, loaders, presets, shared, training, ui, utils
-from app.modules.extensions import apply_extensions
-from app.modules.github import clone_or_pull_repository
-from app.modules.html_generator import chat_html_wrapper
-from app.modules.LoRA import add_lora_to_model
-from app.modules.models import load_model, unload_model
-from app.modules.models_settings import (
+import app.extensions.extensions as extensions_module
+from app.modules import presets
+from app.extensions.extensions import apply_extensions
+from app.utils.github import clone_or_pull_repository
+from app.front.html_generator import chat_html_wrapper
+from app.engine.LoRA import add_lora_to_model
+from app.engine.models import load_model, unload_model
+from app.settings import (
     apply_model_settings_to_state,
     get_model_settings_from_yamls,
     save_model_settings,
     update_model_parameters
 )
-from app.modules.text_generation import (
+from app.engine.text_generation import (
     generate_reply_wrapper,
     get_encoded_length,
     stop_everything_event
 )
-from app.modules.utils import gradio
+from app.utils.utils import gradio
 
 
 def load_model_wrapper(selected_model, loader, autoload=False):

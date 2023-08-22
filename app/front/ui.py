@@ -4,7 +4,7 @@ from pathlib import Path
 import gradio as gr
 import torch
 
-from app.modules import shared
+from app import shared
 
 
 with open(Path(__file__).resolve().parent / '../../static/css/main.css', 'r') as f:

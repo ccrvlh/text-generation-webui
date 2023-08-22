@@ -3,9 +3,9 @@ from pathlib import Path
 import torch
 from peft import PeftModel
 
-import app.modules.shared as shared
-from app.modules.logging_colors import logger
-from app.modules.models import reload_model
+import app.shared as shared
+from app.utils.logging_colors import logger
+from app.engine.models import reload_model
 
 
 def add_lora_to_model(lora_names):

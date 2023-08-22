@@ -6,8 +6,8 @@ import traceback
 from threading import Thread
 from typing import Callable, Optional
 
-from app.modules import shared
-from app.modules.chat import load_character_memoized
+from app import shared
+from app.front.chat import load_character_memoized
 from app.modules.presets import load_preset_memoized
 
 

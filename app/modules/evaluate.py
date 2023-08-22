@@ -6,13 +6,13 @@ import torch
 from datasets import load_dataset
 from tqdm import tqdm
 
-from app.modules import shared
-from app.modules.models import load_model, unload_model
-from app.modules.models_settings import (
+from app import shared
+from app.engine.models import load_model, unload_model
+from app.settings import (
     get_model_settings_from_yamls,
     update_model_parameters
 )
-from app.modules.text_generation import encode
+from app.engine.text_generation import encode
 
 
 def load_past_evaluations():

@@ -2,8 +2,8 @@ from pathlib import Path
 
 import gradio as gr
 
-from app.modules.html_generator import get_image_cache
-from app.modules.shared import gradio
+from app.front.html_generator import get_image_cache
+from app.shared import gradio
 
 
 def generate_css():

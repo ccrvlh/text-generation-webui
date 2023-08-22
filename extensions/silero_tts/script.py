@@ -3,10 +3,11 @@ from pathlib import Path
 
 import gradio as gr
 import torch
+from app.front import chat
 
 from extensions.silero_tts import tts_preprocessor
-from app.modules import chat, shared
-from app.modules.utils import gradio
+from app import shared
+from app.utils.utils import gradio
 
 torch._C._jit_set_profiling_mode(False)
 
