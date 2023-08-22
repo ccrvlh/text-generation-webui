@@ -5,7 +5,7 @@ import gradio as gr
 
 import extensions
 import app.shared as shared
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 from inspect import signature
 
 

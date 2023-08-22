@@ -4,7 +4,7 @@ import torch
 from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
 
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 
 logger.info('Intercepting all calls to posthog :)')
 posthog.capture = lambda *args, **kwargs: None

@@ -11,9 +11,9 @@ import yaml
 from PIL import Image
 
 import app.shared as shared
-from app.extensions.extensions import apply_extensions
+from app.extensions import apply_extensions
 from app.front.html_generator import chat_html_wrapper, make_thumbnail
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 from app.engine.text_generation import (
     generate_reply,
     get_encoded_length,

@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from app.front import chat
 
 from app import shared
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 
 from .chromadb import add_chunks_to_collector, make_collector
 from .download_urls import download_urls

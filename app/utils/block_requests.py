@@ -3,7 +3,7 @@ import io
 
 import requests
 
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 
 original_open = open
 original_get = requests.get

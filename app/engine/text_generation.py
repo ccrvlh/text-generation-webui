@@ -11,15 +11,16 @@ import transformers
 from transformers import LogitsProcessorList
 
 import app.shared as shared
-from app.utils.callbacks import (
-    Iteratorize,
-    Stream,
-    _StopEverythingStoppingCriteria
-)
-from app.extensions.extensions import apply_extensions
-from app.front.html_generator import generate_4chan_html, generate_basic_html
-from app.utils.logging_colors import logger
-from app.models import clear_torch_cache, local_rank
+
+from app.utils.callbacks import Iteratorize
+from app.utils.callbacks import Stream
+from app.utils.callbacks import _StopEverythingStoppingCriteria
+from app.extensions import apply_extensions
+from app.front.html_generator import generate_4chan_html
+from app.front.html_generator import generate_basic_html
+from app.utils.logging import logger
+from app.models import clear_torch_cache
+from app.models import local_rank
 
 
 def generate_reply(*args, **kwargs):

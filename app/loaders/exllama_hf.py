@@ -8,14 +8,14 @@ from transformers import GenerationConfig, PretrainedConfig, PreTrainedModel
 from transformers.modeling_outputs import CausalLMOutputWithPast
 
 from app import shared
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 
 try:
     from exllama.model import ExLlama, ExLlamaCache, ExLlamaConfig
 except:
     logger.warning('Exllama module failed to load. Will attempt to load from repositories.')
     try:
-        from app.utils.relative_imports import RelativeImport
+        from app.utils.imports import RelativeImport
 
         with RelativeImport("repositories/exllama"):
             from model import ExLlama, ExLlamaCache, ExLlamaConfig

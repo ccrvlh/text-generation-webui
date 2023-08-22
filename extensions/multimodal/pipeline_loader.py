@@ -5,7 +5,7 @@ from typing import Tuple
 
 from extensions.multimodal.abstract_pipeline import AbstractMultimodalPipeline
 from app import shared
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 
 
 def _get_available_pipeline_modules():

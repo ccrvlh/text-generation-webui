@@ -7,7 +7,7 @@ import gradio as gr
 
 from app import shared
 from app.utils.utils import gradio
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 
 params = {
     'activate': True,

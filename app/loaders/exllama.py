@@ -3,7 +3,7 @@ from pathlib import Path
 from torch import version as torch_version
 
 from app import shared
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 from app.engine.text_generation import get_max_prompt_length
 
 try:
@@ -13,7 +13,7 @@ try:
 except:
     logger.warning('Exllama module failed to load. Will attempt to load from repositories.')
     try:
-        from app.utils.relative_imports import RelativeImport
+        from app.utils.imports import RelativeImport
 
         with RelativeImport("repositories/exllama"):
             from generator import ExLlamaGenerator

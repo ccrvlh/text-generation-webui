@@ -4,7 +4,7 @@ from pathlib import Path
 
 import yaml
 
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 
 generation_lock = None
 model = None

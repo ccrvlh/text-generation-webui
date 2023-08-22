@@ -7,7 +7,7 @@ import torch.nn as nn
 import transformers.models.llama.modeling_llama
 
 import app.shared as shared
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 
 if shared.args.xformers:
     try:

@@ -8,7 +8,7 @@ from transformers import GenerationConfig, PretrainedConfig, PreTrainedModel
 from transformers.modeling_outputs import CausalLMOutputWithPast
 
 from app import shared
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 
 if torch.cuda.is_available():
     from llama_cpp_cuda import Llama

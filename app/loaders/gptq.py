@@ -9,7 +9,7 @@ import transformers
 from transformers import AutoConfig, AutoModelForCausalLM
 
 import app.shared as shared
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 
 sys.path.insert(0, str(Path("repositories/GPTQ-for-LLaMa")))
 

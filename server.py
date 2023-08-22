@@ -7,7 +7,7 @@ from app.front import ui
 from app.front import chat
 from app.loaders import loaders
 from app.utils import utils
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 from app.utils.block_requests import OpenMonkeyPatch, RequestBlocker
 
 os.environ['GRADIO_ANALYTICS_ENABLED'] = 'False'
@@ -39,7 +39,7 @@ from PIL import Image
 
 import app.extensions.extensions as extensions_module
 from app import presets
-from app.extensions.extensions import apply_extensions
+from app.extensions import apply_extensions
 from app.utils.github import clone_or_pull_repository
 from app.front.html_generator import chat_html_wrapper
 from app.engine.LoRA import add_lora_to_model

@@ -13,7 +13,7 @@ import torch
 
 from app import shared
 from app.utils.callbacks import Iteratorize
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 
 if torch.cuda.is_available():
     from llama_cpp_cuda import Llama, LlamaCache, LogitsProcessorList

@@ -9,7 +9,7 @@ from PIL import Image
 
 from extensions.multimodal.pipeline_loader import load_pipeline
 from app import shared
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 from app.engine.text_generation import encode, get_max_prompt_length
 
 

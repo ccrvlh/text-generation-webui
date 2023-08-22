@@ -36,7 +36,7 @@ from app.evaluate import (
     generate_markdown_table,
     save_past_evaluations
 )
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 from app.utils.utils import natural_keys
 
 # This mapping is from a very recent commit, not yet released.

@@ -4,7 +4,7 @@ from datetime import datetime
 from pathlib import Path
 
 from app import shared
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 
 
 # Helper function to get multiple values from shared.gradio

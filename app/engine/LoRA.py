@@ -4,7 +4,7 @@ import torch
 from peft import PeftModel
 
 import app.shared as shared
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 from app.models import reload_model
 
 

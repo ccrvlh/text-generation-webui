@@ -19,7 +19,7 @@ from transformers import (
 
 import app.shared as shared
 from app.loaders import llama_attn_hijack, sampler_hijack
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 from app.settings import infer_loader
 
 transformers.logging.set_verbosity_error()
@@ -32,7 +32,7 @@ if shared.args.deepspeed:
         is_deepspeed_zero3_enabled
     )
 
-    from app.extensions.deepspeed_parameters import generate_ds_config
+    from app.utils.deepspeed import generate_ds_config
 
     # Distributed setup
     local_rank = shared.args.local_rank if shared.args.local_rank is not None else int(os.getenv("LOCAL_RANK", "0"))
@@ -295,15 +295,15 @@ def GPTQ_loader(model_name):
     # Monkey patch
     if shared.args.monkey_patch:
         logger.warning("Applying the monkey patch for using LoRAs with GPTQ models. It may cause undefined behavior outside its intended scope.")
-        from app.monkey_patch_gptq_lora import load_model_llama
+        from app.engine.patch import load_model_llama
 
         model, _ = load_model_llama(model_name)
 
     # No monkey patch
     else:
-        import app.loaders.GPTQ_loader
+        from app.loaders import gptq
 
-        model = modules.GPTQ_loader.load_quantized(model_name)
+        model = gptq.load_quantized(model_name)
 
     return model
 

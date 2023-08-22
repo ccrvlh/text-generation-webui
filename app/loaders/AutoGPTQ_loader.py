@@ -3,7 +3,7 @@ from pathlib import Path
 from auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig
 
 import app.shared as shared
-from app.utils.logging_colors import logger
+from app.utils.logging import logger
 from app.models import get_max_memory_dict
 
 
